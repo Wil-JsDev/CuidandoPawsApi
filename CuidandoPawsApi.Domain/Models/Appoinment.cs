@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace CuidandoPawsApi.Domain.Models
 {
-    public class Adoption
+    public class Appoinment
     {
-        public  int Id { get; set; }
+        public int Id { get; set; }
 
-        public DateTime AdoptionDate { get; set; } = DateTime.UtcNow;
-
-        public bool Status { get; set; } = true;
+        public DateTime ReservationDate { get; set; } = DateTime.UtcNow;
 
         public string? Notes { get; set; }
     }

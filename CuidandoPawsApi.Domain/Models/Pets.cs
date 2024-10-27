@@ -18,13 +18,13 @@ namespace CuidandoPawsApi.Domain.Models
 
         public string? Color { get; set; }
 
-        public bool AdoptionStatus { get; set; }
+        public bool AdoptionStatus { get; set; } = true;
 
         public string? Notes { get; set; }
 
         public DateTime DateOfEntry { get; set; } = DateTime.UtcNow;
 
-        public bool Gender { get; set; }
+        public string? Gender { get; set; }
 
         public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
