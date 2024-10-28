@@ -1,0 +1,39 @@
+
+services:
+  Mydatabase:
+   image: ${POSTGRES_IMAGE}
+   container_name: myDb
+   environment:
+   - POSTGRES_USER=${POSTGRES_USER}
+   - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+   - POSTGRES_DB=${POSTGRES_DB}
+   restart: always
+   env_file: 
+    - .env
+   ports:
+    - ${POSTGRES_PORTS}:5432
+   volumes:
+   - CuidandoPawsDb:/var/lib/postgresql/data
+  
+
+
+  PgAdmin:
+   depends_on: 
+   - Mydatabase
+   image: dpage/pgadmin4:6.17
+   container_name: PgAdmin
+   restart: always
+   env_file:
+    - .env
+   ports:
+    - "${PGADMIN_PORTS}:80" 
+   environment:
+   - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+   - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+   volumes:
+   - PgAdmin:/var/lib/pgadmin
+   
+ 
+volumes:
+  CuidandoPawsDb:
+  PgAdmin:  
