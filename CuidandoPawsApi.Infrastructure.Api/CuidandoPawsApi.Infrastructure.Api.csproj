@@ -7,11 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CuidandoPawsApi.Application\CuidandoPawsApi.Application.csproj" />
+    <ProjectReference Include="..\CuidandoPawsApi.Infrastructure.Persistence\CuidandoPawsApi.Infrastructure.Persistence.csproj" />
   </ItemGroup>
 
 </Project>
