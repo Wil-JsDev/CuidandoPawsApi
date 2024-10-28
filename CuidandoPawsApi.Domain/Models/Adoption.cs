@@ -15,5 +15,9 @@ namespace CuidandoPawsApi.Domain.Models
         public bool Status { get; set; } = true;
 
         public string? Notes { get; set; }
+
+        public int IdPets { get; set; }
+
+        public Pets? Pets { get; set; }
     }
 }
