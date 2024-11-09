@@ -13,5 +13,10 @@ namespace CuidandoPawsApi.Domain.Models
         public DateTime ReservationDate { get; set; } = DateTime.UtcNow;
 
         public string? Notes { get; set; }
+        
+        public int IdServiceCatalog { get; set; }
+        
+        public ServiceCatalog? ServiceCatalog { get; set; }
+        
     }
 }
