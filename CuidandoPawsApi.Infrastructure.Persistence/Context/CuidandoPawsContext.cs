@@ -9,7 +9,6 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
         public CuidandoPawsContext(DbContextOptions<CuidandoPawsContext> options) : base(options) { }
 
         #region Models
-        public DbSet<Adoption> Adoptions { get; set; }
 
         public DbSet<Appoinment> Appoinments { get; set; }
 
@@ -18,22 +17,41 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
         public DbSet<Pets> Pets { get; set; }
 
         public DbSet<Species> Species { get; set; }
+        
+        public DbSet<ServiceCatalog> ServicesCatalog { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            # region Tables
+            modelBuilder.Entity<Appoinment>()
+                        .ToTable("Appoinment");
+            
+            modelBuilder.Entity<MedicalRecord>()
+                .ToTable("MedicalRecord");
+            
+            modelBuilder.Entity<Pets>()
+                .ToTable("Pets");
+            
+            modelBuilder.Entity<ServiceCatalog>()
+                .ToTable("ServiceCatalog");
+            
+            modelBuilder.Entity<Species>()
+                .ToTable("Species");
+            #endregion
+            
             #region Primary Key
-            modelBuilder.Entity<Adoption>()
-                .HasKey(x => x.Id)
-                .HasAnnotation("Npgsql:IdentityStart", 10000)
-                .HasName("PK_Adoption");
-
             modelBuilder.Entity<Appoinment>()
                 .HasKey(x => x.Id)
                 .HasAnnotation("Npgsql:IdentityStart", 10000)
                 .HasName("PK_Appoinment");
+            
+            modelBuilder.Entity<ServiceCatalog>()
+                .HasKey(x => x.Id)
+                .HasAnnotation("Npgsql:IdentityStart", 10000)
+                .HasName("PK_ServiceCatalog");
 
             modelBuilder.Entity<MedicalRecord>()
                 .HasKey(x => x.Id)
@@ -53,20 +71,13 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
 
             #endregion
 
-            #region Relations
+            #region Relationships
             modelBuilder.Entity<Pets>()
                         .HasOne(x => x.Species)
                         .WithMany(x => x.Pets)
                         .HasForeignKey(x => x.SpeciesId)
                         .IsRequired()
                         .HasConstraintName("FK_Species");
-
-            modelBuilder.Entity<Adoption>()
-                         .HasOne(x => x.Pets)
-                         .WithOne(x => x.Adoption)
-                         .HasForeignKey<Adoption>(x => x.IdPets)
-                         .IsRequired()
-                         .HasConstraintName("FK_Pets");
 
             modelBuilder.Entity<Pets>()
                         .HasOne(x => x.MedicalRecord)
@@ -75,6 +86,13 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
                         .IsRequired()
                         .HasConstraintName("FK_Pets"); //Change
 
+            modelBuilder.Entity<ServiceCatalog>()
+                .HasMany(x => x.Appoinment)
+                .WithOne(x => x.ServiceCatalog)
+                .HasForeignKey(x => x.IdServiceCatalog)
+                .IsRequired()
+                .HasConstraintName("FK_ServiceCatalog");
+                        
             #endregion
 
             #region Medical Records Property
@@ -84,22 +102,45 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
 
             modelBuilder.Entity<MedicalRecord>()
                 .Property(x => x.Treatment)
+                .HasMaxLength(100)
                 .IsRequired();
 
             modelBuilder.Entity<MedicalRecord>()
                 .Property(x => x.Recommendations)
+                .HasMaxLength(150)
                 .IsRequired();
+            
+            modelBuilder.Entity<MedicalRecord>()
+                        .Property(x => x.IdPet)
+                        .IsRequired();
             #endregion
 
-            #region Adoption
-            modelBuilder.Entity<Adoption>()
-               .Property(x => x.Id)
-               .IsRequired();
+            #region Service Catalog Property
+            modelBuilder.Entity<ServiceCatalog>()
+                .Property(x => x.NameService)
+                .HasMaxLength(50)
+                .IsRequired();
+            
+            modelBuilder.Entity<ServiceCatalog>()
+                .Property(x => x.Description)
+                .HasColumnType("Text")
+                .IsRequired();
 
-            modelBuilder.Entity<Adoption>()
-               .Property(x => x.Notes)
-               .IsRequired();
+            modelBuilder.Entity<ServiceCatalog>()
+                .Property(x => x.Price)
+                .HasColumnType("decimal(10,2)");
 
+            modelBuilder.Entity<ServiceCatalog>()
+                .Property(x => x.Type)
+                .HasMaxLength(15);
+            
+            modelBuilder.Entity<ServiceCatalog>()
+                        .HasIndex(x => x.NameService)
+                        .IsUnique();
+            
+            modelBuilder.Entity<ServiceCatalog>()
+                        .Property(x => x.Duration)
+                        .IsRequired();
             #endregion
 
             #region Species Property
@@ -109,7 +150,9 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
 
             modelBuilder.Entity<Species>()
                 .Property (x => x.Description)
+                .HasMaxLength(150)
                 .IsRequired();
+            
             #endregion
 
             #region Pets Property
@@ -119,29 +162,51 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
 
             modelBuilder.Entity<Pets>()
                 .Property(x => x.NamePaws)
+                .HasMaxLength(50)
                 .IsRequired();
 
             modelBuilder.Entity<Pets>()
                 .Property(x => x.Bred)
+                .HasMaxLength(75)
                 .IsRequired();
 
             modelBuilder.Entity<Pets>()
                 .Property(x => x.Notes)
+                .HasMaxLength(100)
                 .IsRequired();
 
             modelBuilder.Entity<Pets>()
                 .Property(x => x.Color)
-                .IsRequired();
-
-            modelBuilder.Entity<Pets>()
-                .Property(x => x.NamePaws)
+                .HasMaxLength(25)
                 .IsRequired();
 
             modelBuilder.Entity<Pets>()
                 .Property(x => x.Gender)
+                .HasMaxLength(25)
                 .IsRequired();
+            
+            modelBuilder.Entity<Pets>()
+                        .Property(x => x.SpeciesId)
+                        .IsRequired();
+            #endregion
 
+            #region Appoinment
+            
+            modelBuilder.Entity<Appoinment>()
+                        .Property(x => x.Id)
+                        .IsRequired();
+            
+            modelBuilder.Entity<Appoinment>()
+                        .Property(x => x.ReservationDate)
+                        .IsRequired();
 
+            modelBuilder.Entity<Appoinment>()
+                .Property(x => x.Notes)
+                .HasMaxLength(75);
+                        
+            modelBuilder.Entity<Appoinment>()
+                        .Property(x => x.IdServiceCatalog)
+                        .IsRequired();
             #endregion
         }
     }
