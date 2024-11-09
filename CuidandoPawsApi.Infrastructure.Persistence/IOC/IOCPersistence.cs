@@ -17,7 +17,10 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.IOC
 
             services.AddDbContext<CuidandoPawsContext>(p =>
             {
-                p.UseNpgsql(configuration.GetConnectionString("CuidadoPawsDb"));
+                p.UseNpgsql(configuration.GetConnectionString("CuidadoPawsDb"), b =>
+                {
+                    b.MigrationsAssembly("CuidandoPawsApi.Infrastructure.Persistence");
+                });
             });
         }
     }
