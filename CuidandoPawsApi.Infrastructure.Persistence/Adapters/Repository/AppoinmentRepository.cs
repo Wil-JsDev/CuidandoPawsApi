@@ -24,7 +24,7 @@ public class AppoinmentRepository : GenericRepository<Appoinment>, IAppoinmentRe
 
     public async Task<IEnumerable<ServiceCatalog>> GetAvailabilityServiceAsync(int serviceCatalog, bool isActive)
     {
-        var query = await _context.ServicesCatalog.AsQueryable()
+        var query = await _context.Set<ServiceCatalog>().AsQueryable()
             .Where(x => x.Id == serviceCatalog && x.IsAvaible == isActive)
             .ToListAsync();
         
@@ -33,7 +33,7 @@ public class AppoinmentRepository : GenericRepository<Appoinment>, IAppoinmentRe
 
     public async Task<Appoinment> GetLastAddedAppoinmentAsync(int appoinmentId)
     {
-        var query = await _context.Appoinments.AsQueryable()   
+        var query = await _context.Set<Appoinment>().AsQueryable()   
                                     .OrderByDescending(s => s.Id == appoinmentId)
                                     .FirstOrDefaultAsync();
         
