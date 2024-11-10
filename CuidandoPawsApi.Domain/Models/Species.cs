@@ -12,6 +12,8 @@ namespace CuidandoPawsApi.Domain.Models
 
         public string? Description { get; set; }
 
+        public DateTime? EntryOfSpecie { get; set; }
+
         public ICollection<Pets>? Pets { get; set; }
     }
 }

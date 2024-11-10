@@ -15,7 +15,8 @@ public class ServiceCatalog
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;    
     
     public string? Type { get; set; }
-    
+
+    public bool IsAvaible { get; set; }
     public int Duration { get; set; }
     
     public ICollection<Appoinment>? Appoinment { get; set; }
