@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CuidandoPawsApi.Domain.Ports.Repository;
+using CuidandoPawsApi.Infrastructure.Persistence.Adapters.Repository;
 
 namespace CuidandoPawsApi.Infrastructure.Persistence.IOC
 {
@@ -14,7 +16,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.IOC
     {
         public static void AddPersistence(this IServiceCollection services, IConfiguration configuration)
         {
-
+            #region DbContext
             services.AddDbContext<CuidandoPawsContext>(p =>
             {
                 p.UseNpgsql(configuration.GetConnectionString("CuidadoPawsDb"), b =>
@@ -22,6 +24,16 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.IOC
                     b.MigrationsAssembly("CuidandoPawsApi.Infrastructure.Persistence");
                 });
             });
+            #endregion
+            
+            #region Repositories
+            services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddTransient<IAppoinmentRepository, AppoinmentRepository>();
+            services.AddTransient<IMedicalRecordRepository, MedicalRecordRepository>();
+            services.AddTransient<IPetsRepository, PetsRepository>();
+            services.AddTransient<IServiceCatalogRepository, ServiceCatalogRepository>();
+            services.AddTransient<ISpeciesRepository, SpeciesRepository>();
+            #endregion
         }
     }
 }
