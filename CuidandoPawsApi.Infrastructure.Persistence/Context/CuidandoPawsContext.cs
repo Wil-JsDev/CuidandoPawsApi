@@ -141,6 +141,8 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
             modelBuilder.Entity<ServiceCatalog>()
                         .Property(x => x.Duration)
                         .IsRequired();
+            modelBuilder.Entity<ServiceCatalog>()
+                .Property(x => x.IsAvaible);
             #endregion
 
             #region Species Property
@@ -152,7 +154,10 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
                 .Property (x => x.Description)
                 .HasMaxLength(150)
                 .IsRequired();
-            
+
+            modelBuilder.Entity<Species>()
+                        .Property(x => x.EntryOfSpecie)
+                        .IsRequired();
             #endregion
 
             #region Pets Property

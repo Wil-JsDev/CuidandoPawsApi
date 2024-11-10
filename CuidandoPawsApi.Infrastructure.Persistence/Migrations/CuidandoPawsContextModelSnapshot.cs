@@ -155,6 +155,9 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsAvaible")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("NameService")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -189,6 +192,10 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
+
+                    b.Property<DateTime?>("EntryOfSpecie")
+                        .IsRequired()
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id")
                         .HasName("PK_Species")
