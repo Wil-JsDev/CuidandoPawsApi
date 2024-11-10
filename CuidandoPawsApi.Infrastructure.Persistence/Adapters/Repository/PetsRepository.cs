@@ -21,6 +21,7 @@ public class PetsRepository : GenericRepository<Pets>, IPetsRepository
         var pets = await _context.Set<Pets>().AsNoTracking()
             .OrderBy(p => p.Id)
             .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
 
         var pagedResponse = new PagedResult<Pets>(pets, pageNumber, pageSize,totalRecords);
