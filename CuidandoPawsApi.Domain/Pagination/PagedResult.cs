@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CuidandoPawsApi.Domain.Ports.Repository
+namespace CuidandoPawsApi.Domain.Pagination
 {
     // Change this a Interfaces
-    public class IPagedResult <T> where T : class
+    public class PagedResult <T> where T : class
     {
-        public IPagedResult(IEnumerable<T>? items, int totalItems, int currentPage, int pageSize)
+        public PagedResult(IEnumerable<T>? items, int totalItems, int currentPage, int pageSize)
         {
             Items = items;
             TotalItems = totalItems;
