@@ -9,6 +9,6 @@ namespace CuidandoPawsApi.Domain.Ports.Repository
 {
     public interface IServiceCatalogRepository : IGenericRepository<ServiceCatalog>
     {
-        Task AssignTaskToCaregiversAsync(int caregiversId);
+        
     }
 }
