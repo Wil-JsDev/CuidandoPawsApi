@@ -3,6 +3,7 @@ using System;
 using CuidandoPawsApi.Infrastructure.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CuidandoPawsContext))]
-    partial class CuidandoPawsContextModelSnapshot : ModelSnapshot
+    [Migration("20241109201146_UpdateModelSpecies")]
+    partial class UpdateModelSpecies
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,9 +157,6 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 
                     b.Property<int>("Duration")
                         .HasColumnType("integer");
-
-                    b.Property<bool>("IsAvaible")
-                        .HasColumnType("boolean");
 
                     b.Property<string>("NameService")
                         .IsRequired()
