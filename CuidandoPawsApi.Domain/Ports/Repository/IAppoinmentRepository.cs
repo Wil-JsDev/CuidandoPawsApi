@@ -9,10 +9,10 @@ namespace CuidandoPawsApi.Domain.Ports.Repository
 {
     public interface IAppoinmentRepository : IGenericRepository<Appoinment>
     {
-        Task<IEnumerable<ServiceCatalog>> CheckAvailabilityAsync(int serviceId, DateTime date);
+        Task<IEnumerable<ServiceCatalog>> CheckAvailabilityAsync(int serviceId, DateTime date, CancellationToken cancellationToken);
 
-        Task<IEnumerable<ServiceCatalog>> GetAvailabilityServiceAsync (int serviceCatalog, bool isActive);
+        Task<IEnumerable<ServiceCatalog>> GetAvailabilityServiceAsync (int serviceCatalog, bool isActive, CancellationToken cancellationToken);
         
-        Task<Appoinment> GetLastAddedAppoinmentAsync (int appoinmentId);
+        Task<Appoinment> GetLastAddedAppoinmentAsync (int appoinmentId, CancellationToken cancellationToken);
     }
 }

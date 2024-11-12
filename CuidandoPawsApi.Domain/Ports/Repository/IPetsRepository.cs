@@ -11,8 +11,8 @@ namespace CuidandoPawsApi.Domain.Ports.Repository
     public interface IPetsRepository : IGenericRepository<Pets>
     {
 
-        Task<PagedResult<Pets>> GetPagedPetsAsync(int pageNumber, int pageSize);
+        Task<PagedResult<Pets>> GetPagedPetsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
 
-        Task<Pets> GetLastAddedPetAsync(Pets pets);
+        Task<Pets> GetLastAddedPetAsync(Pets pets, CancellationToken cancellationToken);
     }
 }

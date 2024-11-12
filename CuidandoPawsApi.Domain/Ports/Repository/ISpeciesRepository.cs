@@ -9,6 +9,6 @@ namespace CuidandoPawsApi.Domain.Ports.Repository
 {
     public interface ISpeciesRepository : IGenericRepository<Species>
     {
-        Task<Species> GetLastAddedSpeciesAsync(DateTime entryOfSpeciesDate);
+        Task<Species> GetLastAddedSpeciesAsync(DateTime entryOfSpeciesDate, CancellationToken cancellationToken);
     }
 }

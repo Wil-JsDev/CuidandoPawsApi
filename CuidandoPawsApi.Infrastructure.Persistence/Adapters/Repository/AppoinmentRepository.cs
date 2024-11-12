@@ -12,30 +12,30 @@ public class AppoinmentRepository : GenericRepository<Appoinment>, IAppoinmentRe
         
     }
     
-    public async Task<IEnumerable<ServiceCatalog>> CheckAvailabilityAsync(int serviceId, DateTime date)
+    public async Task<IEnumerable<ServiceCatalog>> CheckAvailabilityAsync(int serviceId, DateTime date, CancellationToken cancellationToken)
     {
         
         var query = await _context.Set<ServiceCatalog>().AsQueryable()
             .Where(s => s.Id == serviceId && s.CreatedAt >= date)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         
         return query;
     }
 
-    public async Task<IEnumerable<ServiceCatalog>> GetAvailabilityServiceAsync(int serviceCatalog, bool isActive)
+    public async Task<IEnumerable<ServiceCatalog>> GetAvailabilityServiceAsync(int serviceCatalog, bool isActive, CancellationToken cancellationToken )
     {
         var query = await _context.Set<ServiceCatalog>().AsQueryable()
             .Where(x => x.Id == serviceCatalog && x.IsAvaible == isActive)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         
         return query;
     }
 
-    public async Task<Appoinment> GetLastAddedAppoinmentAsync(int appoinmentId)
+    public async Task<Appoinment> GetLastAddedAppoinmentAsync(int appoinmentId, CancellationToken cancellationToken)
     {
         var query = await _context.Set<Appoinment>().AsQueryable()   
                                     .OrderByDescending(s => s.Id == appoinmentId)
-                                    .FirstOrDefaultAsync();
+                                    .FirstOrDefaultAsync(cancellationToken);
         
         return query;
     }

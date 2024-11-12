@@ -13,7 +13,7 @@ public class PetsRepository : GenericRepository<Pets>, IPetsRepository
         
     }
 
-    public async Task<PagedResult<Pets>> GetPagedPetsAsync(int pageNumber, int pageSize)
+    public async Task<PagedResult<Pets>> GetPagedPetsAsync(int pageNumber, int pageSize,CancellationToken cancellationToken)
     {
         
         var totalRecords = await _context.Set<Pets>().AsNoTracking().CountAsync();
@@ -22,18 +22,18 @@ public class PetsRepository : GenericRepository<Pets>, IPetsRepository
             .OrderBy(p => p.Id)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         var pagedResponse = new PagedResult<Pets>(pets, pageNumber, pageSize,totalRecords);
         
         return pagedResponse;
     }
 
-    public async Task<Pets> GetLastAddedPetAsync(Pets pets)
+    public async Task<Pets> GetLastAddedPetAsync(Pets pets, CancellationToken cancellationToken)
     {
         var query = await _context.Set<Pets>().AsQueryable()
             .OrderByDescending(p => p.Id == pets.Id)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
         
         return query;
     }

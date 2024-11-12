@@ -17,11 +17,11 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Adapters.Repository
             
         }
 
-        public async Task<Species> GetLastAddedSpeciesAsync(DateTime entryOfSpeciesDate)
+        public async Task<Species> GetLastAddedSpeciesAsync(DateTime entryOfSpeciesDate, CancellationToken cancellationToken)
         {
             var query = await _context.Set<Species>().AsQueryable()
                                 .OrderByDescending(s => s.EntryOfSpecie == entryOfSpeciesDate)
-                                .FirstOrDefaultAsync();
+                                .FirstOrDefaultAsync(cancellationToken);
             return query;
         }
     }

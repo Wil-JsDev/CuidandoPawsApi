@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CuidandoPawsApi.Infrastructure.Persistence.Adapters.Repository
@@ -18,27 +19,28 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Adapters.Repository
             _context = context;
         }
 
-        public virtual async Task AddAsync(T entity)
+        public virtual async Task AddAsync(T entity, CancellationToken cancellationToken)
         {
-          await _context.Set<T>().AddAsync(entity);
+          await _context.Set<T>().AddAsync(entity, cancellationToken);
           await SaveAsync();
         }
 
-        public virtual async Task<T> GetByIdAsync(int id)
+        public virtual async Task<T> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            T? t = await _context.Set<T>().FindAsync(id);
+            T? t = await _context.Set<T>().FindAsync(id, cancellationToken);
             await SaveAsync();
             return t;
         }
 
-        public virtual async Task DeleteAsync(int id)
+        public virtual async Task DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            var entity = await GetByIdAsync(id);
+            var entity = await GetByIdAsync(id, cancellationToken);
             _context.Set<T>().Remove(entity);
             await SaveAsync();
         }
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync() => await _context.Set<T>().ToListAsync();
+        public virtual async Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken) => 
+            await _context.Set<T>().ToListAsync(cancellationToken);
 
 
         public virtual async Task UpdateAsync(T entity)
@@ -48,7 +50,8 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Adapters.Repository
             await SaveAsync();
         }
 
-       public virtual async Task SaveAsync() => await _context.SaveChangesAsync();
+       public virtual async Task SaveAsync() => 
+            await _context.SaveChangesAsync();
         
     }
 }
