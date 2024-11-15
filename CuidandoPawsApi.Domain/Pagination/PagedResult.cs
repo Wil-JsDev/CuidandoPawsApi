@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace CuidandoPawsApi.Domain.Pagination
 {
     // Change this a Interfaces
-    public class PagedResult <T> where T : class
+    public class PagedResult <T> 
     {
         public PagedResult(IEnumerable<T>? items, int totalItems, int currentPage, int pageSize)
         {
