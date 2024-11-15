@@ -12,11 +12,11 @@ public class AppoinmentRepository : GenericRepository<Appoinment>, IAppoinmentRe
         
     }
     
-    public async Task<IEnumerable<ServiceCatalog>> CheckAvailabilityAsync(int serviceId, DateTime date, CancellationToken cancellationToken)
+    public async Task<IEnumerable<ServiceCatalog>> CheckAvailabilityAsync(int serviceId, CancellationToken cancellationToken)
     {
         
         var query = await _context.Set<ServiceCatalog>().AsQueryable()
-            .Where(s => s.Id == serviceId && s.CreatedAt >= date)
+            .Where(s => s.Id == serviceId)
             .ToListAsync(cancellationToken);
         
         return query;
@@ -31,10 +31,11 @@ public class AppoinmentRepository : GenericRepository<Appoinment>, IAppoinmentRe
         return query;
     }
 
-    public async Task<Appoinment> GetLastAddedAppoinmentAsync(int appoinmentId, CancellationToken cancellationToken)
+    public async Task<Appoinment> GetLastAppoinmentAddedOnDateAsync(DateTime dateTime, CancellationToken cancellationToken)
     {
-        var query = await _context.Set<Appoinment>().AsQueryable()   
-                                    .OrderByDescending(s => s.Id == appoinmentId)
+        var query = await _context.Set<Appoinment>().AsQueryable()  
+                                    .Where(x => x.ReservationDate < dateTime)
+                                    .OrderByDescending(s => s.Id)
                                     .FirstOrDefaultAsync(cancellationToken);
         
         return query;
