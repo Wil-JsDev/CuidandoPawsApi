@@ -29,10 +29,11 @@ public class PetsRepository : GenericRepository<Pets>, IPetsRepository
         return pagedResponse;
     }
 
-    public async Task<Pets> GetLastAddedPetAsync(Pets pets, CancellationToken cancellationToken)
+    public async Task<Pets> GetLastAddedPetsOfDayAsync(DateTime day,CancellationToken cancellationToken)
     {
         var query = await _context.Set<Pets>().AsQueryable()
-            .OrderByDescending(p => p.Id == pets.Id)
+            .Where(x => x.DateOfEntry < day)
+            .OrderByDescending(p => p.Id)
             .FirstOrDefaultAsync(cancellationToken);
         
         return query;

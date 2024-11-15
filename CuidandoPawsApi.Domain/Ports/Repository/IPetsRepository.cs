@@ -13,6 +13,6 @@ namespace CuidandoPawsApi.Domain.Ports.Repository
 
         Task<PagedResult<Pets>> GetPagedPetsAsync(int pageNumber, int pageSize, CancellationToken cancellationToken);
 
-        Task<Pets> GetLastAddedPetAsync(Pets pets, CancellationToken cancellationToken);
+        Task<Pets> GetLastAddedPetsOfDayAsync(DateTime day,CancellationToken cancellationToken);
     }
 }
