@@ -9,6 +9,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.Appoinment
 {
     public interface IGetAppoinmentAvailabilityService<TDto>
     {
-        Task<IEnumerable<TDto>> GetAvailabilityServiceAsync(int serviceCatalog, bool isActive, CancellationToken cancellationToken);
+        Task<IEnumerable<TDto>> GetAvailabilityServiceAsync(int serviceCatalog, CancellationToken cancellationToken);
     }
 }
