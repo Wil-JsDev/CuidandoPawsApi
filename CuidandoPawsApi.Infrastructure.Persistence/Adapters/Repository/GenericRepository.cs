@@ -32,9 +32,9 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Adapters.Repository
             return t;
         }
 
-        public virtual async Task DeleteAsync(int id, CancellationToken cancellationToken)
+        public virtual async Task DeleteAsync(T entity, CancellationToken cancellationToken)
         {
-            var entity = await GetByIdAsync(id, cancellationToken);
+            //var entity = await GetByIdAsync(id, cancellationToken);
             _context.Set<T>().Remove(entity);
             await SaveAsync();
         }
