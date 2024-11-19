@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CuidandoPawsApi.Application.DTOs.MedicalRecord;
 //using AppoinmentDTos = CuidandoPawsApi.Application.DTOs.Appoinment.AppoinmentDTos;
 
 namespace CuidandoPawsApi.Application.Mapper
@@ -23,7 +24,8 @@ namespace CuidandoPawsApi.Application.Mapper
             CreateMap<Appoinment, AppoinmentDTos>()
                       .ForMember(dest => dest.AppoinmentId, opt => opt.MapFrom(src => src.Id));
 
-            CreateMap<AppoinmentDTos, Appoinment>();
+            CreateMap<AppoinmentDTos, Appoinment>()
+                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AppoinmentId));
 
             #endregion
 
@@ -32,9 +34,21 @@ namespace CuidandoPawsApi.Application.Mapper
                         .ForMember(dest => dest.ServiceCatalogId, opt => opt.Ignore())
                         .ForMember(dest => dest.DescriptionService, opt => opt.Ignore());
 
-            CreateMap<ServiceCatalogDTos, ServiceCatalog>();
+            CreateMap<ServiceCatalogDTos, ServiceCatalog>()
+                        .ForMember(dest => dest.Id, opt => opt.Ignore())
+                        .ForMember(dest => dest.Description, opt => opt.Ignore());
             #endregion
 
+            #region Medical Record
+            CreateMap<CreateUpdateMedicalRecordDTos, MedicalRecord>()
+                                                     .ReverseMap();
+
+            CreateMap<MedicalRecord, MedicalRecordDTos>()
+                        .ForMember(opt => opt.MedicalRecordId, src => src.MapFrom(src => src.Id));
+
+            CreateMap<MedicalRecordDTos, MedicalRecord>()
+                        .ForMember(opt => opt.Id, src => src.MapFrom(src => src.MedicalRecordId));
+            #endregion
         }
     }
 }
