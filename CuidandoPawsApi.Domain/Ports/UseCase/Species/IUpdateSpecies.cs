@@ -8,6 +8,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.Species
 {
     public interface IUpdateSpecies<TDtoStatus,TDto>
     {
-        Task<TDto> UpdateAsync(int Id, TDtoStatus dtoStatus);
+        Task<TDto> UpdateAsync(int id, TDtoStatus dtoStatus);
     }
 }
