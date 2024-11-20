@@ -24,5 +24,14 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Adapters.Repository
                                 .FirstOrDefaultAsync(cancellationToken);
             return query;
         }
+
+        public async Task<IEnumerable<Species>> GetOrderedByIdAsync(CancellationToken cancellationToken)
+        {
+            var query = await _context.Set<Species>().AsQueryable()
+                    .OrderBy(s => s.Id)
+                    .ToListAsync(cancellationToken);
+
+            return query;
+        }
     }
 }
