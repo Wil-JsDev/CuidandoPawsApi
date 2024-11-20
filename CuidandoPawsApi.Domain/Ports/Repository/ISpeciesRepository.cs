@@ -10,5 +10,7 @@ namespace CuidandoPawsApi.Domain.Ports.Repository
     public interface ISpeciesRepository : IGenericRepository<Species>
     {
         Task<Species> GetLastAddedSpeciesAsync(CancellationToken cancellationToken);
+
+        Task<IEnumerable<Species>> GetOrderedByIdAsync(CancellationToken cancellationToken);
     }
 }

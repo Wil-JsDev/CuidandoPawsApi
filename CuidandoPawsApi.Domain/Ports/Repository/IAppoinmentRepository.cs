@@ -11,7 +11,7 @@ namespace CuidandoPawsApi.Domain.Ports.Repository
     {
         Task<IEnumerable<ServiceCatalog>> CheckAvailabilityAsync(int serviceId, CancellationToken cancellationToken);
 
-        Task<IEnumerable<ServiceCatalog>> GetAvailabilityServiceAsync (int serviceCatalog, bool isActive, CancellationToken cancellationToken);
+        Task<IEnumerable<ServiceCatalog>> GetAvailabilityServiceAsync (ServiceCatalog serviceCatalog, bool isActive, CancellationToken cancellationToken);
         
         Task<Appoinment> GetLastAppoinmentAddedOnDateAsync(DateTime dateTime, CancellationToken cancellationToken);
     }

@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace CuidandoPawsApi.Domain.Ports.UseCase.Species
 {
-    public interface IUpdateSpecies<TDtoStatus,TDto>
+    public interface IGetSpeciesOrderById<TDTos>
     {
-        Task<TDto> UpdateAsync(int id, TDtoStatus dtoStatus);
+        Task<IEnumerable<TDTos>> GetOrderedByIdAsync(CancellationToken cancellationToken);
     }
 }
