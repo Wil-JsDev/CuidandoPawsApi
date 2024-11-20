@@ -22,10 +22,10 @@ public class AppoinmentRepository : GenericRepository<Appoinment>, IAppoinmentRe
         return query;
     }
 
-    public async Task<IEnumerable<ServiceCatalog>> GetAvailabilityServiceAsync(int serviceCatalog, bool isActive, CancellationToken cancellationToken )
+    public async Task<IEnumerable<ServiceCatalog>> GetAvailabilityServiceAsync(ServiceCatalog serviceCatalog, bool isActive, CancellationToken cancellationToken )
     {
         var query = await _context.Set<ServiceCatalog>().AsQueryable()
-            .Where(x => x.Id == serviceCatalog && x.IsAvaible == isActive)
+            .Where(x => x.Id == serviceCatalog.Id && x.IsAvaible == isActive)
             .ToListAsync(cancellationToken);
         
         return query;

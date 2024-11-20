@@ -26,7 +26,7 @@ namespace CuidandoPawsApi.Application.Adapters.Appointment
 
         public async Task<IEnumerable<ServiceCatalogDTos>> GetAvailabilityServiceAsync(int serviceCatalog, CancellationToken cancellationToken)
         {
-            var serviceCatalogId = _serviceCatalogRepository.GetByIdAsync(serviceCatalog,cancellationToken);
+            var serviceCatalogId = await _serviceCatalogRepository.GetByIdAsync(serviceCatalog,cancellationToken);
 
             if (serviceCatalogId == null)
             {
@@ -34,7 +34,7 @@ namespace CuidandoPawsApi.Application.Adapters.Appointment
             }
 
             bool isActive = true;   
-            var availableServiceCatalog = await _appoinmentRepository.GetAvailabilityServiceAsync(serviceCatalogId.Id,isActive,cancellationToken);
+            var availableServiceCatalog = await _appoinmentRepository.GetAvailabilityServiceAsync(serviceCatalogId,isActive,cancellationToken);
 
             var serviceCatalogDto = _mapper.Map<IEnumerable<ServiceCatalogDTos>>(availableServiceCatalog);
 
