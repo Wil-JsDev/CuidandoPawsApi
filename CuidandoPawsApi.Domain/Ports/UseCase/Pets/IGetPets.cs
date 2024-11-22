@@ -8,6 +8,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.Pets
 {
     public interface IGetPets<TDto>
     {
-        Task<IEnumerable<TDto>> GetPets(CancellationToken cancellationToken);
+        Task<IEnumerable<TDto>> GetAllAsync (CancellationToken cancellationToken);
     }
 }
