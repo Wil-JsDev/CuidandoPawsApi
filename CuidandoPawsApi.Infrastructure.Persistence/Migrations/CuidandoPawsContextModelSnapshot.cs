@@ -22,37 +22,6 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CuidandoPawsApi.Domain.Models.Adoption", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("AdoptionDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("IdPets")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Notes")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id")
-                        .HasName("PK_Adoption")
-                        .HasAnnotation("Npgsql:IdentityStart", 10000);
-
-                    b.HasIndex("IdPets")
-                        .IsUnique();
-
-                    b.ToTable("Adoptions");
-                });
-
             modelBuilder.Entity("CuidandoPawsApi.Domain.Models.Appoinment", b =>
                 {
                     b.Property<int>("Id")
@@ -61,8 +30,12 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("IdServiceCatalog")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Notes")
-                        .HasColumnType("text");
+                        .HasMaxLength(75)
+                        .HasColumnType("character varying(75)");
 
                     b.Property<DateTime>("ReservationDate")
                         .HasColumnType("timestamp with time zone");
@@ -71,7 +44,9 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .HasName("PK_Appoinment")
                         .HasAnnotation("Npgsql:IdentityStart", 10000);
 
-                    b.ToTable("Appoinments");
+                    b.HasIndex("IdServiceCatalog");
+
+                    b.ToTable("Appoinment", (string)null);
                 });
 
             modelBuilder.Entity("CuidandoPawsApi.Domain.Models.MedicalRecord", b =>
@@ -87,11 +62,13 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Recommendations")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("Treatment")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id")
                         .HasName("PK_MedicalRecord")
@@ -100,7 +77,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                     b.HasIndex("IdPet")
                         .IsUnique();
 
-                    b.ToTable("MedicalRecords");
+                    b.ToTable("MedicalRecord", (string)null);
                 });
 
             modelBuilder.Entity("CuidandoPawsApi.Domain.Models.Pets", b =>
@@ -119,11 +96,13 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Bred")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(75)
+                        .HasColumnType("character varying(75)");
 
                     b.Property<string>("Color")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(25)
+                        .HasColumnType("character varying(25)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -133,15 +112,18 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Gender")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(25)
+                        .HasColumnType("character varying(25)");
 
                     b.Property<string>("NamePaws")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("Notes")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<int>("SpeciesId")
                         .HasColumnType("integer");
@@ -152,7 +134,50 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("SpeciesId");
 
-                    b.ToTable("Pets");
+                    b.ToTable("Pets", (string)null);
+                });
+
+            modelBuilder.Entity("CuidandoPawsApi.Domain.Models.ServiceCatalog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("Text");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsAvaible")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("NameService")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Type")
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
+
+                    b.HasKey("Id")
+                        .HasName("PK_ServiceCatalog")
+                        .HasAnnotation("Npgsql:IdentityStart", 10000);
+
+                    b.HasIndex("NameService")
+                        .IsUnique();
+
+                    b.ToTable("ServiceCatalog", (string)null);
                 });
 
             modelBuilder.Entity("CuidandoPawsApi.Domain.Models.Species", b =>
@@ -165,25 +190,30 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
+                    b.Property<DateTime?>("EntryOfSpecie")
+                        .IsRequired()
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id")
                         .HasName("PK_Species")
                         .HasAnnotation("Npgsql:IdentityStart", 10000);
 
-                    b.ToTable("Species");
+                    b.ToTable("Species", (string)null);
                 });
 
-            modelBuilder.Entity("CuidandoPawsApi.Domain.Models.Adoption", b =>
+            modelBuilder.Entity("CuidandoPawsApi.Domain.Models.Appoinment", b =>
                 {
-                    b.HasOne("CuidandoPawsApi.Domain.Models.Pets", "Pets")
-                        .WithOne("Adoption")
-                        .HasForeignKey("CuidandoPawsApi.Domain.Models.Adoption", "IdPets")
+                    b.HasOne("CuidandoPawsApi.Domain.Models.ServiceCatalog", "ServiceCatalog")
+                        .WithMany("Appoinment")
+                        .HasForeignKey("IdServiceCatalog")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_Pets");
+                        .HasConstraintName("FK_ServiceCatalog");
 
-                    b.Navigation("Pets");
+                    b.Navigation("ServiceCatalog");
                 });
 
             modelBuilder.Entity("CuidandoPawsApi.Domain.Models.MedicalRecord", b =>
@@ -193,7 +223,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .HasForeignKey("CuidandoPawsApi.Domain.Models.MedicalRecord", "IdPet")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_MedicalRecord");
+                        .HasConstraintName("FK_Pets");
 
                     b.Navigation("Pet");
                 });
@@ -212,9 +242,12 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("CuidandoPawsApi.Domain.Models.Pets", b =>
                 {
-                    b.Navigation("Adoption");
-
                     b.Navigation("MedicalRecord");
+                });
+
+            modelBuilder.Entity("CuidandoPawsApi.Domain.Models.ServiceCatalog", b =>
+                {
+                    b.Navigation("Appoinment");
                 });
 
             modelBuilder.Entity("CuidandoPawsApi.Domain.Models.Species", b =>

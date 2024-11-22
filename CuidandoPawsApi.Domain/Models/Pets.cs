@@ -29,9 +29,7 @@ namespace CuidandoPawsApi.Domain.Models
         public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
         public MedicalRecord? MedicalRecord { get; set; }
-
-        public Adoption? Adoption { get; set; }
-
+        
         public int SpeciesId { get; set; }
 
         public Species? Species { get; set; }
