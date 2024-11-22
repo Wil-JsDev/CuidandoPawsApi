@@ -15,18 +15,16 @@ namespace CuidandoPawsApi.Application.Adapters.SpeciesAdapt
     {
         private readonly ISpeciesRepository _speciesRepository;
         private readonly IMapper _mapper;
-        private readonly CancellationToken _cancellationToken;
 
-        public UpdateSpecies(ISpeciesRepository speciesRepository, IMapper mapper, CancellationToken cancellationToken)
+        public UpdateSpecies(ISpeciesRepository speciesRepository, IMapper mapper)
         {
             _speciesRepository = speciesRepository;
             _mapper = mapper;
-            _cancellationToken = cancellationToken;
         }
 
-        public async Task<SpeciesDTos> UpdateAsync(int id, CreateUpdateSpecieDTos dtoStatus)
+        public async Task<SpeciesDTos> UpdateAsync(int id, CreateUpdateSpecieDTos dtoStatus, CancellationToken cancellationToken)
         {
-            var speciesId = await _speciesRepository.GetByIdAsync(id,_cancellationToken);
+            var speciesId = await _speciesRepository.GetByIdAsync(id, cancellationToken);
 
             if (speciesId != null)
             {
