@@ -17,17 +17,16 @@ namespace CuidandoPawsApi.Application.Adapters.MedicalRecordAdapt
 
         private readonly IMedicalRecordRepository _medicalRecordRepository;
         private readonly IMapper _mapper;
-        private readonly CancellationToken _cancellationToken;
-        public UpdateMedicalRecord(IMedicalRecordRepository medicalRecordRepository, IMapper mapper, CancellationToken cancellationToken)
+
+        public UpdateMedicalRecord(IMedicalRecordRepository medicalRecordRepository, IMapper mapper)
         {
             _medicalRecordRepository = medicalRecordRepository;
             _mapper = mapper;
-            _cancellationToken = cancellationToken;
         }
 
-        public async Task<MedicalRecordDTos> UpdateAsync(int id, CreateUpdateMedicalRecordDTos dtoStatus)
+        public async Task<MedicalRecordDTos> UpdateAsync(int id, CreateUpdateMedicalRecordDTos dtoStatus, CancellationToken cancellationToken)
         {
-            var medicalRecord = await _medicalRecordRepository.GetByIdAsync(id, _cancellationToken);
+            var medicalRecord = await _medicalRecordRepository.GetByIdAsync(id, cancellationToken);
             if (medicalRecord != null)
             {
                 medicalRecord = _mapper.Map<CreateUpdateMedicalRecordDTos, MedicalRecord>(dtoStatus, medicalRecord);

@@ -14,20 +14,17 @@ namespace CuidandoPawsApi.Application.Adapters.Appointment
     public class UpdateAppoinment : IUpdateAppoinment<CreateUpdateAppoinmentDTos, AppoinmentDTos>
     {
         private readonly IAppoinmentRepository _appoinmentRepository;
-        private readonly CancellationToken _cancellationToken;
         private readonly IMapper _mapper;
 
-        public UpdateAppoinment(IAppoinmentRepository appoinmentRepository, CancellationToken cancellationToken, 
-            IMapper mapper)
+        public UpdateAppoinment(IAppoinmentRepository appoinmentRepository, IMapper mapper)
         {
             _appoinmentRepository = appoinmentRepository;
-            this._cancellationToken = cancellationToken;
             _mapper = mapper;
         }
 
-        public async Task<AppoinmentDTos> UpdateAsync(int id, CreateUpdateAppoinmentDTos dtoStatus)
+        public async Task<AppoinmentDTos> UpdateAsync(int id, CreateUpdateAppoinmentDTos dtoStatus, CancellationToken cancellationToken)
         {
-            var appoinmentId = await _appoinmentRepository.GetByIdAsync(id,_cancellationToken);
+            var appoinmentId = await _appoinmentRepository.GetByIdAsync(id, cancellationToken);
 
             if (appoinmentId != null)
             {

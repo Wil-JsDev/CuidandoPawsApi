@@ -8,6 +8,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.Appoinment
 {
     public interface IUpdateAppoinment<TDtoStatus,TDto>
     {
-        Task<TDto> UpdateAsync(int id,TDtoStatus dtoStatus);
+        Task<TDto> UpdateAsync(int id,TDtoStatus dtoStatus, CancellationToken cancellationToken);
     }
 }
