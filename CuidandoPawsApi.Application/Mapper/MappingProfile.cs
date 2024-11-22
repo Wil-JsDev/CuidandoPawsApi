@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using CuidandoPawsApi.Application.DTOs.MedicalRecord;
 using System.Runtime.ConstrainedExecution;
 using CuidandoPawsApi.Application.DTOs.Species;
+using CuidandoPawsApi.Application.DTOs.Pets;
+using CuidandoPawsApi.Domain.Pagination;
 //using AppoinmentDTos = CuidandoPawsApi.Application.DTOs.Appoinment.AppoinmentDTos;
 
 namespace CuidandoPawsApi.Application.Mapper
@@ -64,6 +66,27 @@ namespace CuidandoPawsApi.Application.Mapper
             CreateMap<Species, SpeciesDTos>()
                             .ForMember(opt => opt.SpeciesId, src => src.MapFrom(src => src.Id))
                             .ForMember(opt => opt.DescriptionOfSpecies, src => src.MapFrom(src => src.Description));
+            #endregion
+
+            #region Pets
+            CreateMap<Pets, PetsDTos>()
+                .ForMember(dest => dest.PetsId, src => src.MapFrom(src => src.Id))
+                .ForMember(src => src.NotesPets, src => src.MapFrom(src => src.Notes));
+
+            CreateMap<PetsDTos, Pets>()
+               .ForMember(dest => dest.Id, src => src.MapFrom(src => src.PetsId))
+               .ForMember(src => src.Notes, src => src.MapFrom(src => src.NotesPets));
+
+            CreateMap<Pets, CreatePetsDTos>()
+                .ForMember(src => src.NotesPets, src => src.MapFrom(src => src.Notes));
+
+            CreateMap(typeof(PagedResult<>), typeof(PagedResult<>))
+            .ForMember("Results", opt => opt.MapFrom("Results"));
+
+            CreateMap<Pets, UpdatePetsDTos>();
+
+            CreateMap<UpdatePetsDTos,Pets>();
+
             #endregion
         }
     }
