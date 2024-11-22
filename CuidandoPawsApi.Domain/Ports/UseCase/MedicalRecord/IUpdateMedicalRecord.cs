@@ -8,6 +8,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.MedicalRecord
 {
     public interface IUpdateMedicalRecord<TDtoStatus,TDTo>
     {
-        Task<TDTo> UpdateAsync(int id,TDtoStatus dtoStatus);
+        Task<TDTo> UpdateAsync(int id,TDtoStatus dtoStatus, CancellationToken cancellationToken);
     }
 }
