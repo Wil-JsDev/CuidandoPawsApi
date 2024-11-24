@@ -41,6 +41,18 @@ namespace CuidandoPawsApi.Application.Mapper
             CreateMap<ServiceCatalogDTos, ServiceCatalog>()
                         .ForMember(dest => dest.Id, opt => opt.Ignore())
                         .ForMember(dest => dest.Description, opt => opt.Ignore());
+
+            CreateMap<CreateServiceCatalogDTos, ServiceCatalog>()
+                        .ForMember(dest => dest.Description, src => src.MapFrom(src => src.DescriptionService));
+
+            CreateMap<ServiceCatalog, CreateServiceCatalogDTos>()
+                        .ForMember(dest => dest.DescriptionService, src => src.MapFrom(src => src.Description));
+
+            CreateMap<UpdateServiceCatalogDTos, ServiceCatalog>()
+                            .ForMember(dest => dest.Description, src => src.MapFrom(src => src.DescriptionService));
+
+            CreateMap<ServiceCatalog,UpdateServiceCatalogDTos>()
+                            .ForMember(dest => dest.DescriptionService, src => src.MapFrom(src => src.Description));
             #endregion
 
             #region Medical Record
