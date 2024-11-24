@@ -20,7 +20,7 @@ namespace CuidandoPawsApi.Application.DTOs.ServiceCatalog
 
         public string? Type { get; set; }
 
-        public bool IsAvaible { get; set; }
+        public bool IsAvaible { get; set; } = true;
 
         public int Duration { get; set; }
     }
