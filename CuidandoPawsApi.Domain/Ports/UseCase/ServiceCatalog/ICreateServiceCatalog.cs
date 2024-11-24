@@ -9,6 +9,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.ServiceCatalog
 {
     public interface ICreateServiceCatalog<TDto, TDtoStatus>
     {
-        Task<TDto> CreateAsync(TDtoStatus dto);
+        Task<TDto> CreateAsync(TDtoStatus dto, CancellationToken cancellationToken);
     }
 }

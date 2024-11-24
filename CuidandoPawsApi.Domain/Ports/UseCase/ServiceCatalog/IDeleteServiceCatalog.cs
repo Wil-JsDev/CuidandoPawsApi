@@ -8,6 +8,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.ServiceCatalog
 {
     public interface IDeleteServiceCatalog<TDto>
     {
-        Task<TDto> DeleteAsync(int id);
+        Task<TDto> DeleteAsync(int id, CancellationToken cancellationToken);
     }
 }

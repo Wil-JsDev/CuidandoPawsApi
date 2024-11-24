@@ -8,6 +8,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.ServiceCatalog
 {
     public interface IUpdateServiceCatalog<TDto, TDtoStatus>
     {
-        Task<TDto> UpdateAsync(TDtoStatus dto, CancellationToken cancellationToken);
+        Task<TDto> UpdateAsync(int id,TDtoStatus dto, CancellationToken cancellationToken);
     }
 }
