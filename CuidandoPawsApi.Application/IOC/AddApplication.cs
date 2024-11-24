@@ -1,5 +1,6 @@
 ﻿using CuidandoPawsApi.Application.Adapters.Appointment;
 using CuidandoPawsApi.Application.Adapters.MedicalRecordAdapt;
+using CuidandoPawsApi.Application.Adapters.ServiceCatalogAdapt;
 using CuidandoPawsApi.Application.Adapters.SpeciesAdapt;
 using CuidandoPawsApi.Application.Adapters.SpeciesAdapter;
 using CuidandoPawsApi.Application.DTOs.Appoinment;
@@ -9,6 +10,7 @@ using CuidandoPawsApi.Application.DTOs.Species;
 using CuidandoPawsApi.Application.Mapper;
 using CuidandoPawsApi.Domain.Ports.UseCase.Appoinment;
 using CuidandoPawsApi.Domain.Ports.UseCase.MedicalRecord;
+using CuidandoPawsApi.Domain.Ports.UseCase.ServiceCatalog;
 using CuidandoPawsApi.Domain.Ports.UseCase.Species;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -50,6 +52,14 @@ namespace CuidandoPawsApi.Application.IOC
             services.AddScoped<IGetSpeciesLastAdded<SpeciesDTos>,GetSpeciesLastAdded>();
             services.AddScoped<IGetSpeciesOrderById<SpeciesDTos>,GetSpeciesOrderById>();
             services.AddScoped<IUpdateSpecies<CreateUpdateSpecieDTos,SpeciesDTos>,UpdateSpecies>();
+            #endregion
+
+            #region Service Catalog
+            services.AddScoped<ICreateServiceCatalog<ServiceCatalogDTos, CreateServiceCatalogDTos>, CreateServiceCatalog>();
+            services.AddScoped<IDeleteServiceCatalog<ServiceCatalogDTos>, DeleteServiceCatalog>();
+            services.AddScoped<IUpdateServiceCatalog<ServiceCatalogDTos,UpdateServiceCatalogDTos>,UpdateServiceCatalog>();
+            services.AddScoped<IGetServiceCatalog<ServiceCatalogDTos>, GetServiceCatalog>();
+            services.AddScoped<IGetByIdServiceCatalog<ServiceCatalogDTos>,GetByIdServiceCatalog>();
             #endregion
         }
     }

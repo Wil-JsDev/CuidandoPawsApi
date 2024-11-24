@@ -6,21 +6,15 @@ using System.Threading.Tasks;
 
 namespace CuidandoPawsApi.Application.DTOs.ServiceCatalog
 {
-    public class ServiceCatalogDTos
+    public class UpdateServiceCatalogDTos
     {
-        public int ServiceCatalogId { get; set; }
-
         public string? NameService { get; set; }
 
         public string? DescriptionService { get; set; }
 
         public decimal Price { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
         public string? Type { get; set; }
-
-        public bool IsAvaible { get; set; } = true;
 
         public int Duration { get; set; }
     }
