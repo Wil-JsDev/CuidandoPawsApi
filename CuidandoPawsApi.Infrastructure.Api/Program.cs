@@ -1,4 +1,5 @@
 using CuidandoPawsApi.Infrastructure.Persistence.IOC;
+using CuidandoPawsApi.Application.IOC;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ builder.Services.AddSwaggerGen();
 
 //DI
 builder.Services.AddPersistence(configuration);
-
+builder.Services.AddApplicationService();
 
 var app = builder.Build();
 
