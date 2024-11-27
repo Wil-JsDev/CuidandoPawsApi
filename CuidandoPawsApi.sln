@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuidandoPawsApi.Application
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuidandoPawsApi.Infrastructure.Persistence", "CuidandoPawsApi.Infrastructure.Persistence\CuidandoPawsApi.Infrastructure.Persistence.csproj", "{B3550C55-CBA5-4C56-B20E-F83916942872}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuidandoPawsApi.Infrastructure.Api", "CuidandoPawsApi.Infrastructure.Api\CuidandoPawsApi.Infrastructure.Api.csproj", "{CA2CF1F4-26BF-423A-BBCC-D64E7C638113}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuidandoPawsApi.Infrastructure.Api", "CuidandoPawsApi.Infrastructure.Api\CuidandoPawsApi.Infrastructure.Api.csproj", "{CA2CF1F4-26BF-423A-BBCC-D64E7C638113}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuidandoPawsApi.Infrastructure.Shared", "CuidandoPawsApi.Infrastructure.Shared\CuidandoPawsApi.Infrastructure.Shared.csproj", "{326A9B7C-2209-4233-843C-BFF9F1BF8AB9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{CA2CF1F4-26BF-423A-BBCC-D64E7C638113}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA2CF1F4-26BF-423A-BBCC-D64E7C638113}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA2CF1F4-26BF-423A-BBCC-D64E7C638113}.Release|Any CPU.Build.0 = Release|Any CPU
+		{326A9B7C-2209-4233-843C-BFF9F1BF8AB9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{326A9B7C-2209-4233-843C-BFF9F1BF8AB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{326A9B7C-2209-4233-843C-BFF9F1BF8AB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{326A9B7C-2209-4233-843C-BFF9F1BF8AB9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +59,7 @@ Global
 		{493CAE6E-72FC-48CA-835F-DEE155888C05} = {14C8B98A-DAEA-4BBA-9849-F0010761955D}
 		{B3550C55-CBA5-4C56-B20E-F83916942872} = {C0B3BAB2-60CD-425C-8DE6-3A2F2CFCC5AE}
 		{CA2CF1F4-26BF-423A-BBCC-D64E7C638113} = {C0B3BAB2-60CD-425C-8DE6-3A2F2CFCC5AE}
+		{326A9B7C-2209-4233-843C-BFF9F1BF8AB9} = {C0B3BAB2-60CD-425C-8DE6-3A2F2CFCC5AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0994674D-7ACE-43C6-ABDB-14EFFA5A9C24}
