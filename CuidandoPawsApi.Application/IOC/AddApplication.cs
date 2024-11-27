@@ -18,7 +18,7 @@ namespace CuidandoPawsApi.Application.IOC
 {
     public static class AddApplication
     {
-        public static void AddApplicationService(IServiceCollection services)
+        public static void AddApplicationService(this IServiceCollection services)
         {
 
             #region Mapper
