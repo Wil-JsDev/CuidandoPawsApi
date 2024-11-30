@@ -13,7 +13,7 @@ appsettings.json
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 .env
-.idea
+/.idea
 # Mono auto generated files
 mono_crash.*
 
