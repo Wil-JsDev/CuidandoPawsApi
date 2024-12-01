@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CuidandoPawsApi.Application\CuidandoPawsApi.Application.csproj" />
     <ProjectReference Include="..\CuidandoPawsApi.Infrastructure.Persistence\CuidandoPawsApi.Infrastructure.Persistence.csproj" />
+    <ProjectReference Include="..\CuidandoPawsApi.Infrastructure.Shared\CuidandoPawsApi.Infrastructure.Shared.csproj" />
   </ItemGroup>
 
 </Project>
