@@ -45,7 +45,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
             #region Primary Key
             modelBuilder.Entity<Appoinment>()
                 .HasKey(x => x.Id)
-                .HasAnnotation("Npgsql:IdentityStart", 10000)
+                .HasAnnotation("Npgsql:IdentityStart", 20000)
                 .HasName("PK_Appoinment");
             
             modelBuilder.Entity<ServiceCatalog>()
