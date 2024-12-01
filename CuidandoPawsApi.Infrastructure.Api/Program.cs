@@ -1,6 +1,7 @@
 using CuidandoPawsApi.Infrastructure.Persistence.IOC;
 using CuidandoPawsApi.Application.IOC;
 using dotenv.net;
+using CuidandoPawsApi.Infrastructure.Shared;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +23,7 @@ builder.Services.AddSwaggerGen();
 //DI
 builder.Services.AddPersistence(configuration);
 builder.Services.AddApplicationService();
+builder.Services.AddSharedLayer(configuration);
 
 var app = builder.Build();
 
