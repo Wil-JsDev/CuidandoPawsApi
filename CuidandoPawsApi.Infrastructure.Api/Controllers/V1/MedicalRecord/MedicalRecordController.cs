@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using CuidandoPawsApi.Application.Adapters.PetsAdapt;
+using CuidandoPawsApi.Application.Common;
 using CuidandoPawsApi.Application.DTOs.MedicalRecord;
 using CuidandoPawsApi.Application.DTOs.Pets;
 using CuidandoPawsApi.Domain.Ports.UseCase;
@@ -47,17 +48,26 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         {
             var medicalRecord = await _getByIdMedicalRecord.GetByIdAsync(id,cancellationToken);
 
-            return medicalRecord == null ? NotFound() : Ok(medicalRecord);
+            if (medicalRecord != null)
+            {
+                return Ok(ApiResponse<MedicalRecordDTos>.SuccessResponse(medicalRecord));
+            }
+            return NotFound(ApiResponse<string>.ErrorResponse("Id not found"));
         }
 
         [HttpPost("add")]
-        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<MedicalRecordDTos>> CreateMedicalRecordAsync([FromBody] CreateUpdateMedicalRecordDTos medicalRecordDTos, CancellationToken cancellationToken)
         {
             var medicalRecord = await _createMedicalRecord.AddAsync(medicalRecordDTos, cancellationToken);
 
-            return CreatedAtAction(nameof(GetByIdAsync), new {Id = medicalRecord.MedicalRecordId}, medicalRecord);
+            if (medicalRecord != null)
+            {
+                return Ok(ApiResponse<MedicalRecordDTos>.SuccessResponse(medicalRecord));
+            }
+
+            return BadRequest(ApiResponse<string>.ErrorResponse("Error entering data")); 
         }
 
         [HttpPut("{id}")]
@@ -69,10 +79,10 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
             if (medicalRecordId != null)
             {
                 var medicalRecordNew = await _updateMedicalRecord.UpdateAsync(id, updateMedicalRecordDTos,cancellationToken);
-                return Ok(medicalRecordNew);
+                return Ok(ApiResponse<MedicalRecordDTos>.SuccessResponse(medicalRecordNew));
             }
 
-            return NotFound(medicalRecordId);
+            return NotFound(ApiResponse<string>.ErrorResponse("Id not found and cannot be updated"));
         }
     }
 }
