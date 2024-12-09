@@ -92,8 +92,7 @@ namespace CuidandoPawsApi.Application.Mapper
             CreateMap<Pets, CreatePetsDTos>()
                 .ForMember(src => src.NotesPets, src => src.MapFrom(src => src.Notes));
 
-            CreateMap(typeof(PagedResult<>), typeof(PagedResult<>))
-            .ForMember("Results", opt => opt.MapFrom("Results"));
+            CreateMap(typeof(PagedResult<>), typeof(PagedResult<>));
 
             CreateMap<Pets, UpdatePetsDTos>();
 
