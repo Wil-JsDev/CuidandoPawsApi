@@ -7,16 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Asp.Versioning.Mvc" Version="8.1.0" />
     <PackageReference Include="dotenv.net" Version="3.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="7.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="7.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CuidandoPawsApi.Application\CuidandoPawsApi.Application.csproj" />
+    <ProjectReference Include="..\CuidandoPawsApi.Domain\CuidandoPawsApi.Domain.csproj" />
     <ProjectReference Include="..\CuidandoPawsApi.Infrastructure.Persistence\CuidandoPawsApi.Infrastructure.Persistence.csproj" />
     <ProjectReference Include="..\CuidandoPawsApi.Infrastructure.Shared\CuidandoPawsApi.Infrastructure.Shared.csproj" />
   </ItemGroup>
