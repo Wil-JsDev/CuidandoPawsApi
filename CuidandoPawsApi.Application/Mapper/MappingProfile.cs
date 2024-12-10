@@ -35,8 +35,8 @@ namespace CuidandoPawsApi.Application.Mapper
 
             #region ServiceCatalog
             CreateMap<ServiceCatalog, ServiceCatalogDTos>()
-                        .ForMember(dest => dest.ServiceCatalogId, opt => opt.Ignore())
-                        .ForMember(dest => dest.DescriptionService, opt => opt.Ignore());
+                        .ForMember(dest => dest.ServiceCatalogId, src => src.MapFrom(src => src.Id))
+                        .ForMember(dest => dest.DescriptionService, src => src.MapFrom(src => src.Description));
 
             CreateMap<ServiceCatalogDTos, ServiceCatalog>()
                         .ForMember(dest => dest.Id, opt => opt.Ignore())
