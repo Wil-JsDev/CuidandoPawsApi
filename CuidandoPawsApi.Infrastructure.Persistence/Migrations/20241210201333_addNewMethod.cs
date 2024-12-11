@@ -5,25 +5,18 @@
 namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class AddPropServiceCatalogProperty : Migration
+    public partial class addNewMethod : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "IsAvaible",
-                table: "ServiceCatalog",
-                type: "boolean",
-                nullable: false,
-                defaultValue: false);
+            migrationBuilder.Sql("ALTER SEQUENCE \"ServiceCatalog_Id_seq\" RESTART WITH 10000;");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "IsAvaible",
-                table: "ServiceCatalog");
+            migrationBuilder.Sql("ALTER SEQUENCE \"ServiceCatalog_Id_seq\" RESTART WITH 10000;");
         }
     }
 }
