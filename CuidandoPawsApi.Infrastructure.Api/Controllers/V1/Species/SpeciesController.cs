@@ -80,7 +80,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
                 return Ok(ApiResponse<SpeciesDTos>.SuccessResponse(speciesUpdate));
             }
 
-            return NotFound(ApiResponse<SpeciesDTos>.ErrorResponse(""));
+            return NotFound(ApiResponse<SpeciesDTos>.ErrorResponse("There were problems with the data entered"));
         }
 
         [HttpDelete("{id}")]
