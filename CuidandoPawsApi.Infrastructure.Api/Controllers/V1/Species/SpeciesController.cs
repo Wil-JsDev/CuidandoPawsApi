@@ -106,7 +106,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<SpeciesDTos>> GetOrderedByISpeciesAsync([FromQuery] string sort, [FromQuery] string direction, CancellationToken cancellationToken)
         {
-            var speciesById = await _getOrderById.GetOrderedByIdAsync(cancellationToken);
+            var speciesById = await _getOrderById.GetOrderedByIdAsync(direction,cancellationToken);
             return Ok(speciesById);
         }
 
