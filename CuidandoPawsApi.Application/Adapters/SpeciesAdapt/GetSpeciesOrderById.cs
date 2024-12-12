@@ -22,12 +22,23 @@ namespace CuidandoPawsApi.Application.Adapters.SpeciesAdapt
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<SpeciesDTos>> GetOrderedByIdAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<SpeciesDTos>> GetOrderedByIdAsync(string direction,CancellationToken cancellationToken)
         {
-            var speciesOrderById = await _speciesRepository.GetOrderedByIdAsync(cancellationToken);
 
-            var speciesDto = _mapper.Map<IEnumerable<SpeciesDTos>>(speciesOrderById);
-            return speciesDto;
+            if (direction == "asc".ToLower())
+            {
+                var speciesOrderById = await _speciesRepository.GetOrderedByIdAsync(cancellationToken);
+                var speciesDto = _mapper.Map<IEnumerable<SpeciesDTos>>(speciesOrderById);
+                return speciesDto;
+            }
+            else if (direction == "desc".ToLower())
+            {
+                var speciesOrderByIdDesc = await _speciesRepository.GetOrdereByIdDescSpeciesAsync(cancellationToken);
+                var speciesDto = _mapper.Map<IEnumerable<SpeciesDTos>>(speciesOrderByIdDesc);
+                return speciesDto;
+            }
+
+            return null;
         }
     }
 }
