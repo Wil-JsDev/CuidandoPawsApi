@@ -1,15 +1,19 @@
 ﻿using CuidandoPawsApi.Application.Adapters.Appointment;
 using CuidandoPawsApi.Application.Adapters.MedicalRecordAdapt;
+using CuidandoPawsApi.Application.Adapters.PetsAdapt;
 using CuidandoPawsApi.Application.Adapters.ServiceCatalogAdapt;
 using CuidandoPawsApi.Application.Adapters.SpeciesAdapt;
 using CuidandoPawsApi.Application.Adapters.SpeciesAdapter;
 using CuidandoPawsApi.Application.DTOs.Appoinment;
 using CuidandoPawsApi.Application.DTOs.MedicalRecord;
+using CuidandoPawsApi.Application.DTOs.Pets;
 using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Application.DTOs.Species;
 using CuidandoPawsApi.Application.Mapper;
+using CuidandoPawsApi.Domain.Ports.UseCase;
 using CuidandoPawsApi.Domain.Ports.UseCase.Appoinment;
 using CuidandoPawsApi.Domain.Ports.UseCase.MedicalRecord;
+using CuidandoPawsApi.Domain.Ports.UseCase.Pets;
 using CuidandoPawsApi.Domain.Ports.UseCase.ServiceCatalog;
 using CuidandoPawsApi.Domain.Ports.UseCase.Species;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +27,16 @@ namespace CuidandoPawsApi.Application.IOC
 
             #region Mapper
             services.AddAutoMapper(typeof(MappingProfile));
+            #endregion
+
+            #region Pets
+            services.AddScoped<ICreatePets<CreatePetsDTos, PetsDTos>, CreatePets>();
+            services.AddScoped<IGetByIdPets<PetsDTos>, GetByIdPets>();
+            services.AddScoped<IGetPets<PetsDTos>,GetPets>();
+            services.AddScoped<IGetPagedPets<PetsDTos>, GetPetsPaged>();
+            services.AddScoped<IDeletePets<PetsDTos>, DeletePets>();    
+            services.AddScoped<IUpdatePets<UpdatePetsDTos,PetsDTos>, UpdatePets>();
+            services.AddScoped<IGetPetsLastAddedOfDay<PetsDTos>, GetPetsLastAddedOfDay>();
             #endregion
 
             #region Appoinment
