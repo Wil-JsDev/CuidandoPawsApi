@@ -43,7 +43,7 @@ namespace CuidandoPawsApi.Application.IOC
             services.AddScoped<ICreateAppoinment<CreateUpdateAppoinmentDTos, AppoinmentDTos>, CreateAppoinment>();
             services.AddScoped<ICheckAppoinmentAvailability<ServiceCatalogDTos>, CheckAppoinmentAvailability>();
             services.AddScoped<IGetByIdAppoinment<AppoinmentDTos>, GetbyIdAppoinment>();
-            services.AddScoped<IGetAppoinmentLastAddedOndate<ServiceCatalogDTos>, GetAppoinmentLastAddedOnDate>();
+            services.AddScoped<IGetAppoinmentLastAddedOndate<AppoinmentDTos>, GetAppoinmentLastAddedOnDate>();
             services.AddScoped<IGetAppoinmentAvailabilityService<ServiceCatalogDTos>, GetAppoinmentAvailabilityService>();
             services.AddScoped<IUpdateAppoinment<CreateUpdateAppoinmentDTos, AppoinmentDTos>,UpdateAppoinment>();    
             services.AddScoped<IGetAppoinment<AppoinmentDTos>,GetAllAppoinment>();

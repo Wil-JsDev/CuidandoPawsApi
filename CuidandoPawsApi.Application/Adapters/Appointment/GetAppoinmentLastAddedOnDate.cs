@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CuidandoPawsApi.Application.DTOs.Appoinment;
 using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.Repository;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CuidandoPawsApi.Application.Adapters.Appointment
 {
-    public class GetAppoinmentLastAddedOnDate : IGetAppoinmentLastAddedOndate<ServiceCatalogDTos>
+    public class GetAppoinmentLastAddedOnDate : IGetAppoinmentLastAddedOndate<AppoinmentDTos>
     {
         private readonly IAppoinmentRepository _appoinmentRepository;
         private readonly IMapper _mapper;
@@ -22,7 +23,7 @@ namespace CuidandoPawsApi.Application.Adapters.Appointment
             _mapper = mapper;
         }
 
-        public async Task<ServiceCatalogDTos> GetLastAddedOnDateAsync(FilterDate filterDate, CancellationToken cancellationToken)
+        public async Task<AppoinmentDTos> GetLastAddedOnDateAsync(FilterDate filterDate, CancellationToken cancellationToken)
         {
             DateTime date = DateTime.UtcNow;
 
@@ -30,21 +31,21 @@ namespace CuidandoPawsApi.Application.Adapters.Appointment
             {
                 date = date.AddDays(-1);
                 var lastDay = await _appoinmentRepository.GetLastAppoinmentAddedOnDateAsync(date,cancellationToken);
-                var filter = _mapper.Map<ServiceCatalogDTos>(lastDay);
+                var filter = _mapper.Map<AppoinmentDTos>(lastDay);
                 return filter;
             }
             else if (filterDate == FilterDate.LasWeek)
             {
                 date = date.AddDays(-7);
                 var lastWeek = await _appoinmentRepository.GetLastAppoinmentAddedOnDateAsync(date,cancellationToken);
-                var filterDto = _mapper.Map<ServiceCatalogDTos>(lastWeek);
+                var filterDto = _mapper.Map<AppoinmentDTos>(lastWeek);
                 return filterDto;
             }
             else if (filterDate == FilterDate.LastThreeDay)
             {
                 date = date.AddDays(-3);
                 var lastThreeDay = await _appoinmentRepository.GetLastAppoinmentAddedOnDateAsync(date,cancellationToken);
-                var filterDto = _mapper.Map<ServiceCatalogDTos>(lastThreeDay);
+                var filterDto = _mapper.Map<AppoinmentDTos>(lastThreeDay);
                 return filterDto;
             }
 
