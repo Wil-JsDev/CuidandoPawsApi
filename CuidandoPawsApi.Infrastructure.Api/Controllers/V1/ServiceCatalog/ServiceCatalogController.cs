@@ -43,7 +43,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
             var serviceCatalog = await _getByIdServiceCatalog.GetByIdAsync(id,cancellationToken);
             if (serviceCatalog != null)
             {
-                Ok(ApiResponse<ServiceCatalogDTos>.SuccessResponse(serviceCatalog));
+               return Ok(ApiResponse<ServiceCatalogDTos>.SuccessResponse(serviceCatalog));
             }
 
             return NotFound(ApiResponse<ServiceCatalogDTos>.ErrorResponse("Id not found"));
@@ -67,22 +67,22 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
             var serviceCatalogId = await _getByIdServiceCatalog.GetByIdAsync(id,cancellationToken);
             if (serviceCatalogId != null)
             {
-                return NotFound(ApiResponse<string>.ErrorResponse("Id not found"));
+                var serviceCatalog = await _updateServiceCatalog.UpdateAsync(id,catalogDTos,cancellationToken);
+                return Ok(ApiResponse<ServiceCatalogDTos>.SuccessResponse(serviceCatalog));
             }
                 
-            var serviceCatalog = await _updateServiceCatalog.UpdateAsync(id,catalogDTos,cancellationToken);
-            return Ok(ApiResponse<ServiceCatalogDTos>.SuccessResponse(serviceCatalog));
+                return NotFound(ApiResponse<string>.ErrorResponse("Id not found"));
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult<ServiceCatalogDTos>> DeleteServiceCatalogAsync([FromRoute] int id, CancellationToken cancellationToken)
         {
-            var serviceCatalog = _deleteServiceCatalog.DeleteAsync(id,cancellationToken);
+            var serviceCatalog = await _deleteServiceCatalog.DeleteAsync(id,cancellationToken);
             if (serviceCatalog != null)
             {
-                return BadRequest(ApiResponse<string>.ErrorResponse("Id not found"));
+                return NoContent();
             }
-            return NoContent();
+            return BadRequest(ApiResponse<string>.ErrorResponse("Id not found"));
         }
     }
 }
