@@ -71,7 +71,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
             return appoinments;
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{appoinmentId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteAppoinmentAsync([FromRoute] int appoinmentId, CancellationToken cancellationToken)
@@ -85,7 +85,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
             return NotFound(ApiResponse<string>.ErrorResponse("Id not found"));
         }
 
-        [HttpPut("{id}")]
+        [HttpPatch("{appoinmentId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AppoinmentDTos>> UpdateAppoinmentAsync([FromRoute] int appoinmentId, [FromBody] CreateUpdateAppoinmentDTos dTos ,CancellationToken cancellationToken)
