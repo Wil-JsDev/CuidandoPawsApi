@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class addNewConfigurationModels : Migration
+    public partial class SecondMigrationForTheBug : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,7 +38,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Description = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    EntryOfSpecie = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    EntryOfSpecie = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -59,7 +59,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_Appoinment", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ServiceCatalog",
+                        name: "FkServiceCatalog",
                         column: x => x.IdServiceCatalog,
                         principalTable: "ServiceCatalog",
                         principalColumn: "Id",
@@ -87,7 +87,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_Pet", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Species",
+                        name: "FkSpecies",
                         column: x => x.SpeciesId,
                         principalTable: "Species",
                         principalColumn: "Id",
@@ -108,7 +108,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_MedicalRecord", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Pets",
+                        name: "FkMedicalRecord",
                         column: x => x.IdPet,
                         principalTable: "Pets",
                         principalColumn: "Id",

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CuidandoPawsContext))]
-    [Migration("20241214223044_DeleteRequiredNameService")]
-    partial class DeleteRequiredNameService
+    [Migration("20241215142641_SecondMigrationForTheBug")]
+    partial class SecondMigrationForTheBug
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -213,7 +213,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .HasForeignKey("IdServiceCatalog")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("Fk_Appoinment");
+                        .HasConstraintName("FkServiceCatalog");
 
                     b.Navigation("ServiceCatalog");
                 });
@@ -225,7 +225,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .HasForeignKey("CuidandoPawsApi.Domain.Models.MedicalRecord", "IdPet")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_Pets");
+                        .HasConstraintName("FkMedicalRecord");
 
                     b.Navigation("Pet");
                 });
@@ -237,7 +237,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .HasForeignKey("SpeciesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_Species");
+                        .HasConstraintName("FkSpecies");
 
                     b.Navigation("Species");
                 });

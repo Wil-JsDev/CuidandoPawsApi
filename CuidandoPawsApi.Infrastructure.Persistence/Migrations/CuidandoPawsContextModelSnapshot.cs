@@ -210,7 +210,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .HasForeignKey("IdServiceCatalog")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_ServiceCatalog");
+                        .HasConstraintName("FkServiceCatalog");
 
                     b.Navigation("ServiceCatalog");
                 });
@@ -222,7 +222,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .HasForeignKey("CuidandoPawsApi.Domain.Models.MedicalRecord", "IdPet")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_Pets");
+                        .HasConstraintName("FkMedicalRecord");
 
                     b.Navigation("Pet");
                 });
@@ -234,7 +234,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .HasForeignKey("SpeciesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_Species");
+                        .HasConstraintName("FkSpecies");
 
                     b.Navigation("Species");
                 });
