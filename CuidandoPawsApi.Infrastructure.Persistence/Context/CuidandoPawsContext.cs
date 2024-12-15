@@ -45,28 +45,23 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
             #region Primary Key
             modelBuilder.Entity<Appoinment>()
                 .HasKey(x => x.Id)
-                .HasAnnotation("Npgsql:IdentityStart", 20000)
                 .HasName("PK_Appoinment");
             
             modelBuilder.Entity<ServiceCatalog>()
                 .HasKey(x => x.Id)
-                .HasAnnotation("Npgsql:IdentityStart", 10000)
                 .HasName("PK_ServiceCatalog");
 
             modelBuilder.Entity<MedicalRecord>()
                 .HasKey(x => x.Id)
-                .HasAnnotation("Npgsql:IdentityStart", 10000)
                 .HasName("PK_MedicalRecord");
 
 
             modelBuilder.Entity<Pets>()
                 .HasKey(x => x.Id)
-                .HasAnnotation("Npgsql:IdentityStart", 10000)
                 .HasName("PK_Pet");
 
             modelBuilder.Entity<Species>()
                 .HasKey(x => x.Id)
-                .HasAnnotation("Npgsql:IdentityStart", 10000)
                 .HasName("PK_Species");
 
             #endregion
@@ -77,27 +72,28 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
                         .WithMany(x => x.Pets)
                         .HasForeignKey(x => x.SpeciesId)
                         .IsRequired()
-                        .HasConstraintName("FK_Species");
+                        .HasConstraintName("FkSpecies");
 
             modelBuilder.Entity<Pets>()
                         .HasOne(x => x.MedicalRecord)
                         .WithOne(x => x.Pet)
                         .HasForeignKey<MedicalRecord>(x => x.IdPet)
                         .IsRequired()
-                        .HasConstraintName("FK_Pets"); //Change
+                        .HasConstraintName("FkMedicalRecord");
 
-            modelBuilder.Entity<ServiceCatalog>()
-                .HasMany(x => x.Appoinment)
-                .WithOne(x => x.ServiceCatalog)
-                .HasForeignKey(x => x.IdServiceCatalog)
-                .IsRequired()
-                .HasConstraintName("FK_ServiceCatalog");
-                        
+            modelBuilder.Entity<Appoinment>()
+                        .HasOne(x => x.ServiceCatalog)
+                        .WithMany(x => x.Appoinment)
+                        .HasForeignKey(x => x.IdServiceCatalog)
+                        .IsRequired()
+                        .HasConstraintName("FkServiceCatalog");
             #endregion
 
             #region Medical Records Property
             modelBuilder.Entity<MedicalRecord>()
                .Property(x => x.Id)
+               .HasAnnotation("Npgsql:IdentityStart", 10000)
+               .ValueGeneratedOnAdd()
                .IsRequired();
 
             modelBuilder.Entity<MedicalRecord>()
@@ -116,6 +112,12 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
             #endregion
 
             #region Service Catalog Property
+            modelBuilder.Entity<ServiceCatalog>()
+                .Property(x => x.Id)
+                .HasAnnotation("Npgsql:IdentityStart", 10000)
+                .ValueGeneratedOnAdd()
+                .IsRequired();
+
             modelBuilder.Entity<ServiceCatalog>()
                 .Property(x => x.NameService)
                 .HasMaxLength(50)
@@ -148,21 +150,21 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
             #region Species Property
             modelBuilder.Entity<Species>()
                 .Property(x => x.Id)
+                .HasAnnotation("Npgsql:IdentityStart", 10000)
+                .ValueGeneratedOnAdd()
                 .IsRequired();
 
             modelBuilder.Entity<Species>()
                 .Property (x => x.Description)
                 .HasMaxLength(150)
-                .IsRequired();
-
-            modelBuilder.Entity<Species>()
-                        .Property(x => x.EntryOfSpecie)
-                        .IsRequired();
+                .IsRequired();            
             #endregion
 
             #region Pets Property
             modelBuilder.Entity<Pets>()
                 .Property(x => x.Id)
+                .HasAnnotation("Npgsql:IdentityStart", 10000)
+                .ValueGeneratedOnAdd()
                 .IsRequired();
 
             modelBuilder.Entity<Pets>()
@@ -199,6 +201,8 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
             
             modelBuilder.Entity<Appoinment>()
                         .Property(x => x.Id)
+                        .HasAnnotation("Npgsql:IdentityStart", 10000)
+                        .ValueGeneratedOnAdd()
                         .IsRequired();
             
             modelBuilder.Entity<Appoinment>()

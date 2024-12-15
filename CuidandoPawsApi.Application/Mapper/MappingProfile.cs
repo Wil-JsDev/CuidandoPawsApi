@@ -22,11 +22,14 @@ namespace CuidandoPawsApi.Application.Mapper
         public MappingProfile()
         {
             #region Appoinment
-            CreateMap<Appoinment, CreateUpdateAppoinmentDTos>()
-                                  .ReverseMap();
+            CreateMap<Appoinment, CreateUpdateAppoinmentDTos>();
+
+            CreateMap<CreateUpdateAppoinmentDTos, Appoinment>();
 
             CreateMap<Appoinment, AppoinmentDTos>()
-                      .ForMember(dest => dest.AppoinmentId, opt => opt.MapFrom(src => src.Id));
+                      .ForMember(dest => dest.AppoinmentId, opt => opt.MapFrom(src => src.Id))
+                      .ForMember(dest => dest.ServiceCatalogId, opt => opt.MapFrom(src => src.IdServiceCatalog));
+            
 
             CreateMap<AppoinmentDTos, Appoinment>()
                  .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AppoinmentId));
@@ -35,8 +38,8 @@ namespace CuidandoPawsApi.Application.Mapper
 
             #region ServiceCatalog
             CreateMap<ServiceCatalog, ServiceCatalogDTos>()
-                        .ForMember(dest => dest.ServiceCatalogId, opt => opt.Ignore())
-                        .ForMember(dest => dest.DescriptionService, opt => opt.Ignore());
+                        .ForMember(dest => dest.ServiceCatalogId, src => src.MapFrom(src => src.Id))
+                        .ForMember(dest => dest.DescriptionService, src => src.MapFrom(src => src.Description));
 
             CreateMap<ServiceCatalogDTos, ServiceCatalog>()
                         .ForMember(dest => dest.Id, opt => opt.Ignore())
@@ -92,8 +95,13 @@ namespace CuidandoPawsApi.Application.Mapper
             CreateMap<Pets, CreatePetsDTos>()
                 .ForMember(src => src.NotesPets, src => src.MapFrom(src => src.Notes));
 
-            CreateMap(typeof(PagedResult<>), typeof(PagedResult<>))
-            .ForMember("Results", opt => opt.MapFrom("Results"));
+            CreateMap<CreatePetsDTos, Pets>()
+                .ForMember(src => src.Notes, src => src.MapFrom(src => src.NotesPets));
+
+
+            CreateMap<PagedResult<PetsDTos>, PagedResult<Pets>>();
+
+            CreateMap<PagedResult<Pets>, PagedResult<PetsDTos>>();
 
             CreateMap<Pets, UpdatePetsDTos>();
 
