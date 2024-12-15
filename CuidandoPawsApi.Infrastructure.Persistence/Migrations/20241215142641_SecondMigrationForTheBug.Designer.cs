@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(CuidandoPawsContext))]
-    [Migration("20241210201333_addNewMethod")]
-    partial class addNewMethod
+    [Migration("20241215142641_SecondMigrationForTheBug")]
+    partial class SecondMigrationForTheBug
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -56,7 +56,8 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:IdentityStart", 10000);
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -197,7 +198,6 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(150)");
 
                     b.Property<DateTime?>("EntryOfSpecie")
-                        .IsRequired()
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id")
@@ -213,7 +213,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .HasForeignKey("IdServiceCatalog")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_ServiceCatalog");
+                        .HasConstraintName("FkServiceCatalog");
 
                     b.Navigation("ServiceCatalog");
                 });
@@ -225,7 +225,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .HasForeignKey("CuidandoPawsApi.Domain.Models.MedicalRecord", "IdPet")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_Pets");
+                        .HasConstraintName("FkMedicalRecord");
 
                     b.Navigation("Pet");
                 });
@@ -237,7 +237,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Migrations
                         .HasForeignKey("SpeciesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("FK_Species");
+                        .HasConstraintName("FkSpecies");
 
                     b.Navigation("Species");
                 });

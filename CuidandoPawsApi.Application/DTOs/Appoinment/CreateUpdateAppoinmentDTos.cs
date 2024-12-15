@@ -10,6 +10,6 @@ namespace CuidandoPawsApi.Application.DTOs.Appoinment
     {
         public string? Notes { get; set; }
 
-        public int ServiceCatalogId { get; set; }
+        public int IdServiceCatalog { get; set; }
     }
 }

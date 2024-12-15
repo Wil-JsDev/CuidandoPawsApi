@@ -22,11 +22,14 @@ namespace CuidandoPawsApi.Application.Mapper
         public MappingProfile()
         {
             #region Appoinment
-            CreateMap<Appoinment, CreateUpdateAppoinmentDTos>()
-                                  .ReverseMap();
+            CreateMap<Appoinment, CreateUpdateAppoinmentDTos>();
+
+            CreateMap<CreateUpdateAppoinmentDTos, Appoinment>();
 
             CreateMap<Appoinment, AppoinmentDTos>()
-                      .ForMember(dest => dest.AppoinmentId, opt => opt.MapFrom(src => src.Id));
+                      .ForMember(dest => dest.AppoinmentId, opt => opt.MapFrom(src => src.Id))
+                      .ForMember(dest => dest.ServiceCatalogId, opt => opt.MapFrom(src => src.IdServiceCatalog));
+            
 
             CreateMap<AppoinmentDTos, Appoinment>()
                  .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.AppoinmentId));

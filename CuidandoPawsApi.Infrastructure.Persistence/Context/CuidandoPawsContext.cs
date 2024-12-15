@@ -72,22 +72,21 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
                         .WithMany(x => x.Pets)
                         .HasForeignKey(x => x.SpeciesId)
                         .IsRequired()
-                        .HasConstraintName("FK_Species");
+                        .HasConstraintName("FkSpecies");
 
             modelBuilder.Entity<Pets>()
                         .HasOne(x => x.MedicalRecord)
                         .WithOne(x => x.Pet)
                         .HasForeignKey<MedicalRecord>(x => x.IdPet)
                         .IsRequired()
-                        .HasConstraintName("FK_Pets"); //Change
+                        .HasConstraintName("FkMedicalRecord");
 
-            modelBuilder.Entity<ServiceCatalog>()
-                .HasMany(x => x.Appoinment)
-                .WithOne(x => x.ServiceCatalog)
-                .HasForeignKey(x => x.IdServiceCatalog)
-                .IsRequired()
-                .HasConstraintName("FK_ServiceCatalog");
-                        
+            modelBuilder.Entity<Appoinment>()
+                        .HasOne(x => x.ServiceCatalog)
+                        .WithMany(x => x.Appoinment)
+                        .HasForeignKey(x => x.IdServiceCatalog)
+                        .IsRequired()
+                        .HasConstraintName("FkServiceCatalog");
             #endregion
 
             #region Medical Records Property
