@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CuidandoPawsApi.Application\CuidandoPawsApi.Application.csproj" />
     <ProjectReference Include="..\CuidandoPawsApi.Domain\CuidandoPawsApi.Domain.csproj" />
+    <ProjectReference Include="..\CuidandoPawsApi.Infrastructure.Identity\CuidandoPawsApi.Infrastructure.Identity.csproj" />
     <ProjectReference Include="..\CuidandoPawsApi.Infrastructure.Persistence\CuidandoPawsApi.Infrastructure.Persistence.csproj" />
     <ProjectReference Include="..\CuidandoPawsApi.Infrastructure.Shared\CuidandoPawsApi.Infrastructure.Shared.csproj" />
   </ItemGroup>
