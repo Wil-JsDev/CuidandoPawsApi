@@ -3,6 +3,10 @@ using CuidandoPawsApi.Application.IOC;
 using dotenv.net;
 using CuidandoPawsApi.Infrastructure.Shared;
 using CuidandoPawsApi.Infrastructure.Api.Extensions;
+using CuidandoPawsApi.Infrastructure.Identity.IOC;
+using Microsoft.AspNetCore.Identity;
+using CuidandoPawsApi.Infrastructure.Identity.Models;
+using CuidandoPawsApi.Infrastructure.Identity.Seeds;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,8 +27,26 @@ builder.Services.AddVersioning();
 builder.Services.AddPersistence(configuration);
 builder.Services.AddApplicationService();
 builder.Services.AddSharedLayer(configuration);
+builder.Services.AddIdentity(configuration);
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+	try
+	{
+		var userManager = services.GetRequiredService<UserManager<User>>();
+		var rolManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+
+		await DefaultAdmin.SeedAsync(userManager, rolManager);
+		await DefaultRoles.SeedAsync(userManager, rolManager);
+	}
+	catch (Exception)
+	{
+	}
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -35,8 +57,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
-app.UseAuthorization();
+
 app.UseSwaggerExtension();
 
 app.MapControllers();
