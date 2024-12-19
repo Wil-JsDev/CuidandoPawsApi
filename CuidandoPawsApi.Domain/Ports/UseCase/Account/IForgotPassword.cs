@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace CuidandoPawsApi.Domain.Ports.UseCase.Account
 {
-    public interface IForgotPassword<TResponse> where TResponse : class
+    public interface IForgotPassword<TResponse,TRequest> 
+        where TResponse : class
+        where TRequest : class
     {
-        Task<TResponse> GetForgotPasswordAsync(string Email);
+        Task<TResponse> GetForgotPasswordAsync(TRequest request, string origin);
     }
 }
