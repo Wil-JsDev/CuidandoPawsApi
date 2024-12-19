@@ -67,7 +67,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.IOC
                 {
                     OnAuthenticationFailed = c =>
                     {
-                        //Cuando el codigo explote, porque algo no se manejo
+                        //When the code explodes, because something was not handled
                         c.NoResult();
                         c.Response.StatusCode = 500;
                         c.Response.ContentType = "text/plain";
@@ -75,7 +75,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.IOC
                     },
                     OnChallenge = c =>
                     {
-                        //No estas autorizado o fue un token invalido
+                        //You are not authorized or it was an invalid token
                         c.HandleResponse();
                         c.Response.StatusCode = 401;
                         c.Response.ContentType = "application/json";
@@ -84,7 +84,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.IOC
                     },
                     OnForbidden = c =>
                     {
-                        //Es para cuando el usuario no tiene permiso para entrar
+                        //It is for when the user does not have permission to enter
                         c.Response.StatusCode = 403;
                         c.Response.ContentType  = "application/json";
                         var result = JsonConvert.SerializeObject(new JwtResponse { HasError = true, Error = "You are not authorized to access this resource"});
