@@ -12,7 +12,7 @@ namespace CuidandoPawsApi.Infrastructure.Shared
         public static void AddSharedLayer(this IServiceCollection services, IConfiguration configuration)
         {
 
-            services.AddScoped<IEmailSender<EmailRequestDTos>, EmailSender>();
+            services.AddScoped<IEmailService<EmailRequestDTos>, EmailSender>();
             services.Configure<MailSettings>(configuration.GetSection("MailSettings"));
         }
     }
