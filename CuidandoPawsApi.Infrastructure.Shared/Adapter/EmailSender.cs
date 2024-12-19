@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CuidandoPawsApi.Infrastructure.Shared.Adapter
 {
-    public class EmailSender : IEmailSender<EmailRequestDTos>
+    public class EmailSender : IEmailService<EmailRequestDTos>
     {
         private MailSettings _mailSettings { get; } 
 
