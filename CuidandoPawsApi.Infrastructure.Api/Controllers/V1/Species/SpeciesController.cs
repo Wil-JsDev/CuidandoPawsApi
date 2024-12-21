@@ -56,7 +56,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
         }
 
 
-        [HttpPost("add")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SpeciesDTos>> CreateSpeciesAsync(CreateUpdateSpecieDTos specieDTos, CancellationToken cancellationToken)

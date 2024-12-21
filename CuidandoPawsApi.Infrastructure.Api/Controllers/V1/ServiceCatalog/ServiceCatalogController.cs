@@ -49,7 +49,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
             return NotFound(ApiResponse<ServiceCatalogDTos>.ErrorResponse("Id not found"));
         }
 
-        [HttpPost("add")]
+        [HttpPost]
         public async Task<ActionResult<ServiceCatalogDTos>> CreateServiceCatalogAsync(CreateServiceCatalogDTos catalogDTos, CancellationToken cancellationToken)
         {
             var serviceCatalogNew = await _createServiceCatalog.CreateAsync(catalogDTos,cancellationToken);

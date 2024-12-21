@@ -38,7 +38,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
             _deleteAppoinment = deleteAppoinment;
         }
 
-        [HttpPost("add")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<AppoinmentDTos>> CreateAppoinmentAsync([FromBody] CreateUpdateAppoinmentDTos dTos, CancellationToken cancellationToken)
