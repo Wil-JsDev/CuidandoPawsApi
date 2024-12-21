@@ -34,7 +34,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
             _getPetsLastAddedOfDay = getPetsLastAddedOfDay;
         }
 
-        [HttpPost("add")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<PetsDTos>> CreatePetsAsync([FromBody] CreatePetsDTos createPetsD, CancellationToken cancellationToken)
