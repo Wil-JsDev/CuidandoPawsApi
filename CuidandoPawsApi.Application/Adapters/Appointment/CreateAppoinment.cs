@@ -3,6 +3,7 @@ using CuidandoPawsApi.Application.DTOs.Appoinment;
 using CuidandoPawsApi.Domain.Models;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase.Appoinment;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace CuidandoPawsApi.Application.Adapters.Appointment
             _mapper = mapper;
         }
 
-        public async Task<AppoinmentDTos> AddAsync(CreateUpdateAppoinmentDTos appoinmentDTos, CancellationToken cancellationToken)
+        public async Task<ResultT<AppoinmentDTos>> AddAsync(CreateUpdateAppoinmentDTos appoinmentDTos, CancellationToken cancellationToken)
         {
             var appoinment = _mapper.Map<Appoinment>(appoinmentDTos);
 
@@ -29,12 +30,10 @@ namespace CuidandoPawsApi.Application.Adapters.Appointment
             {
                 await _appoinmentRepository.AddAsync(appoinment, cancellationToken);
                 var appoinmentDto = _mapper.Map<AppoinmentDTos>(appoinment);
-                return appoinmentDto;
+                return ResultT<AppoinmentDTos>.Success(appoinmentDto);
             }
 
-
-
-            return null;
+            return ResultT<AppoinmentDTos>.Failure(Error.NotFound("400", "Error entering data"));
         }
     }
 }
