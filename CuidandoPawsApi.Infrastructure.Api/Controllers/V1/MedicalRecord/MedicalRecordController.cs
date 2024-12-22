@@ -55,7 +55,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
             return NotFound(ApiResponse<string>.ErrorResponse("Id not found"));
         }
 
-        [HttpPost("add")]
+        [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<MedicalRecordDTos>> CreateMedicalRecordAsync([FromBody] CreateUpdateMedicalRecordDTos medicalRecordDTos, CancellationToken cancellationToken)

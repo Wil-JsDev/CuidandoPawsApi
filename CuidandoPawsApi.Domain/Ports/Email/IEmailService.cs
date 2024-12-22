@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CuidandoPawsApi.Domain.Ports.Email
 {
-    public interface IEmailSender<TStatusDTo>
+    public interface IEmailService<TStatusDTo>
     {
         Task Execute(TStatusDTo dto);
     }

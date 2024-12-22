@@ -28,6 +28,7 @@ builder.Services.AddPersistence(configuration);
 builder.Services.AddApplicationService();
 builder.Services.AddSharedLayer(configuration);
 builder.Services.AddIdentity(configuration);
+builder.Services.AddValidations();
 
 var app = builder.Build();
 
