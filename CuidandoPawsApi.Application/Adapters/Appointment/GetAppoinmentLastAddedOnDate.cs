@@ -4,6 +4,7 @@ using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase.Appoinment;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace CuidandoPawsApi.Application.Adapters.Appointment
             _mapper = mapper;
         }
 
-        public async Task<AppoinmentDTos> GetLastAddedOnDateAsync(FilterDate filterDate, CancellationToken cancellationToken)
+        public async Task <ResultT<AppoinmentDTos>> GetLastAddedOnDateAsync(FilterDate filterDate, CancellationToken cancellationToken)
         {
             DateTime date = DateTime.UtcNow;
 
@@ -31,25 +32,25 @@ namespace CuidandoPawsApi.Application.Adapters.Appointment
             {
                 date = date.AddDays(-1);
                 var lastDay = await _appoinmentRepository.GetLastAppoinmentAddedOnDateAsync(date,cancellationToken);
-                var filter = _mapper.Map<AppoinmentDTos>(lastDay);
-                return filter;
+                var filterDto = _mapper.Map<AppoinmentDTos>(lastDay);
+                return ResultT<AppoinmentDTos>.Success(filterDto);
             }
             else if (filterDate == FilterDate.LasWeek)
             {
                 date = date.AddDays(-7);
                 var lastWeek = await _appoinmentRepository.GetLastAppoinmentAddedOnDateAsync(date,cancellationToken);
                 var filterDto = _mapper.Map<AppoinmentDTos>(lastWeek);
-                return filterDto;
+                return ResultT<AppoinmentDTos>.Success(filterDto);
             }
             else if (filterDate == FilterDate.LastThreeDay)
             {
                 date = date.AddDays(-3);
                 var lastThreeDay = await _appoinmentRepository.GetLastAppoinmentAddedOnDateAsync(date,cancellationToken);
                 var filterDto = _mapper.Map<AppoinmentDTos>(lastThreeDay);
-                return filterDto;
+                return ResultT<AppoinmentDTos>.Success(filterDto);
             }
 
-            return null;
+            return ResultT<AppoinmentDTos>.Failure(Error.Failure("400", "No data entered"));
         }
     }
 }

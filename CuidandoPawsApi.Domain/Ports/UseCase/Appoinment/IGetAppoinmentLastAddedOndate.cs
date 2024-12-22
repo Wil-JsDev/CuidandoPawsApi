@@ -1,4 +1,5 @@
 ﻿using CuidandoPawsApi.Domain.Enum;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.Appoinment
 {
     public interface IGetAppoinmentLastAddedOndate<TDto>
     {
-        Task<TDto> GetLastAddedOnDateAsync(FilterDate filterDate,CancellationToken cancellationToken);
+        Task <ResultT<TDto>> GetLastAddedOnDateAsync(FilterDate filterDate,CancellationToken cancellationToken);
     }
 }
