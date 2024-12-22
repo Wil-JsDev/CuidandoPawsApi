@@ -2,6 +2,7 @@
 using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase.Appoinment;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,21 +25,22 @@ namespace CuidandoPawsApi.Application.Adapters.Appointment
             _serviceCatalogRepository = serviceCatalogRepository;
         }
 
-        public async Task<IEnumerable<ServiceCatalogDTos>> GetAvailabilityServiceAsync(int serviceCatalog, CancellationToken cancellationToken)
+        public async Task <ResultT<IEnumerable<ServiceCatalogDTos>>> GetAvailabilityServiceAsync(int serviceCatalog, CancellationToken cancellationToken)
         {
             var serviceCatalogId = await _serviceCatalogRepository.GetByIdAsync(serviceCatalog,cancellationToken);
 
             if (serviceCatalogId == null)
             {
-                return Enumerable.Empty<ServiceCatalogDTos>();
+                return ResultT<IEnumerable<ServiceCatalogDTos>>.Failure(Error.NotFound("404", "Id not found"));
             }
 
-            bool isActive = true;   
+            
+            bool isActive = true;
             var availableServiceCatalog = await _appoinmentRepository.GetAvailabilityServiceAsync(serviceCatalogId,isActive,cancellationToken);
 
             var serviceCatalogDto = _mapper.Map<IEnumerable<ServiceCatalogDTos>>(availableServiceCatalog);
-
-            return serviceCatalogDto;
+            
+            return ResultT<IEnumerable<ServiceCatalogDTos>>.Success(serviceCatalogDto);
         }
     }
 }
