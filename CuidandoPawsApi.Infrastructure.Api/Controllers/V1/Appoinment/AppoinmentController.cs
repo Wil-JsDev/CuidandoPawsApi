@@ -4,6 +4,7 @@ using CuidandoPawsApi.Application.DTOs.Appoinment;
 using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.UseCase.Appoinment;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,10 +23,11 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         private readonly ICheckAppoinmentAvailability<ServiceCatalogDTos> _checkAppoinmentAvailability;
         private readonly IGetAppoinmentAvailabilityService<ServiceCatalogDTos> _getAppoinmentAvailabilityService;
         private readonly IDeleteAppoinment<AppoinmentDTos> _deleteAppoinment;
+        private readonly IValidator<CreateUpdateAppoinmentDTos> _validator;
 
         public AppoinmentController(ICreateAppoinment<CreateUpdateAppoinmentDTos, AppoinmentDTos> createAppoinment, IGetAppoinment<AppoinmentDTos> getAppoinment, 
             IGetByIdAppoinment<AppoinmentDTos> findByIdAppoinment, IUpdateAppoinment<CreateUpdateAppoinmentDTos, AppoinmentDTos> updateAppoinment, IGetAppoinmentLastAddedOndate<AppoinmentDTos> getAppoinmentLastAdded, 
-            ICheckAppoinmentAvailability<ServiceCatalogDTos> checkAppoinmentAvailability, 
+            ICheckAppoinmentAvailability<ServiceCatalogDTos> checkAppoinmentAvailability, IValidator<CreateUpdateAppoinmentDTos> validator ,
             IGetAppoinmentAvailabilityService<ServiceCatalogDTos> getAppoinmentAvailabilityService, IDeleteAppoinment<AppoinmentDTos> deleteAppoinment)
         {
             _createAppoinment = createAppoinment;
@@ -36,6 +38,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
             _checkAppoinmentAvailability = checkAppoinmentAvailability;
             _getAppoinmentAvailabilityService = getAppoinmentAvailabilityService;
             _deleteAppoinment = deleteAppoinment;
+            _validator = validator;
         }
 
         [HttpPost]
@@ -43,6 +46,12 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<AppoinmentDTos>> CreateAppoinmentAsync([FromBody] CreateUpdateAppoinmentDTos dTos, CancellationToken cancellationToken)
         {
+            var result = await _validator.ValidateAsync(dTos,cancellationToken);
+            if (!result.IsValid)
+            {
+                return BadRequest(result.Errors);
+            }
+
             var appoinmentNew = await _createAppoinment.AddAsync(dTos,cancellationToken);
             if (appoinmentNew != null)
             {
@@ -90,6 +99,12 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<AppoinmentDTos>> UpdateAppoinmentAsync([FromRoute] int appoinmentId, [FromBody] CreateUpdateAppoinmentDTos dTos ,CancellationToken cancellationToken)
         {
+
+            var result = await _validator.ValidateAsync(dTos, cancellationToken);
+            if (!result.IsValid)
+            {
+                return BadRequest(result.Errors);
+            }
             var appoinment = await _findByIdAppoinment.GetByIdAsync(appoinmentId, cancellationToken);
             if (appoinment != null)
             {
