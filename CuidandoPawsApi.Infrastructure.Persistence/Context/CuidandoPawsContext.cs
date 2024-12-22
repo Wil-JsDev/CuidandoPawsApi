@@ -204,10 +204,6 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Context
                         .HasAnnotation("Npgsql:IdentityStart", 10000)
                         .ValueGeneratedOnAdd()
                         .IsRequired();
-            
-            modelBuilder.Entity<Appoinment>()
-                        .Property(x => x.ReservationDate)
-                        .IsRequired();
 
             modelBuilder.Entity<Appoinment>()
                 .Property(x => x.Notes)
