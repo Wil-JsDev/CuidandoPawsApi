@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CuidandoPawsApi.Domain.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.Appoinment
 {
     public interface IUpdateAppoinment<TDtoStatus,TDto>
     {
-        Task<TDto> UpdateAsync(int id,TDtoStatus dtoStatus, CancellationToken cancellationToken);
+        Task <ResultT<TDto>> UpdateAsync(int id,TDtoStatus dtoStatus, CancellationToken cancellationToken);
     }
 }

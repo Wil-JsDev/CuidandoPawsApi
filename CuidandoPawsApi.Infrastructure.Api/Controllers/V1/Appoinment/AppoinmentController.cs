@@ -4,6 +4,7 @@ using CuidandoPawsApi.Application.DTOs.Appoinment;
 using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.UseCase.Appoinment;
+using CuidandoPawsApi.Domain.Utils;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -44,40 +45,43 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<AppoinmentDTos>> CreateAppoinmentAsync([FromBody] CreateUpdateAppoinmentDTos dTos, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateAppoinmentAsync([FromBody] CreateUpdateAppoinmentDTos dTos, CancellationToken cancellationToken)
         {
-            var result = await _validator.ValidateAsync(dTos,cancellationToken);
+            var result = await _validator.ValidateAsync(dTos, cancellationToken);
             if (!result.IsValid)
             {
                 return BadRequest(result.Errors);
             }
 
-            var appoinmentNew = await _createAppoinment.AddAsync(dTos,cancellationToken);
-            if (appoinmentNew != null)
+            var appoinmentNew = await _createAppoinment.AddAsync(dTos, cancellationToken);
+
+            if (appoinmentNew.IsSuccess)
             {
-                return Ok(ApiResponse<AppoinmentDTos>.SuccessResponse(appoinmentNew));
+                return Ok(appoinmentNew.Value);
             }
-            return BadRequest(ApiResponse<string>.ErrorResponse("Error entering data"));
+            
+            return BadRequest(appoinmentNew.Error!);
+
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AppoinmentDTos>> GetByIdAppoinmentAsync([FromRoute] int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetByIdAppoinmentAsync([FromRoute] int id, CancellationToken cancellationToken)
         {
             var appoinmentId = await _findByIdAppoinment.GetByIdAsync(id, cancellationToken);
-            if (appoinmentId != null)
+            if (appoinmentId.IsSuccess)
             {
-                return Ok(ApiResponse<AppoinmentDTos>.SuccessResponse(appoinmentId));
+                return Ok(appoinmentId.Value);
             }
-            return NotFound(ApiResponse<string>.ErrorResponse("Id not found"));
+
+            return NotFound(appoinmentId.Error);
         }
 
         [HttpGet("all")]
         public async Task<IEnumerable<AppoinmentDTos>> AppoinmentAllAsync(CancellationToken cancellationToken)
         {
-            var appoinments = await _getAppoinment.GetAllAsync(cancellationToken);
-            return appoinments;
+            return await _getAppoinment.GetAllAsync(cancellationToken);     
         }
 
         [HttpDelete("{appoinmentId}")]
@@ -86,56 +90,70 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         public async Task<ActionResult> DeleteAppoinmentAsync([FromRoute] int appoinmentId, CancellationToken cancellationToken)
         {
             var appoinment = await _deleteAppoinment.DeleteAppoinmentAsync(appoinmentId,cancellationToken);
-            if (appoinment != null)
+            if (appoinment.IsSuccess)
             {
                 return NoContent();
             }
 
-            return NotFound(ApiResponse<string>.ErrorResponse("Id not found"));
+            return NotFound(appoinment.Error);
         }
 
         [HttpPatch("{appoinmentId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<AppoinmentDTos>> UpdateAppoinmentAsync([FromRoute] int appoinmentId, [FromBody] CreateUpdateAppoinmentDTos dTos ,CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateAppoinmentAsync([FromRoute] int appoinmentId, [FromBody] CreateUpdateAppoinmentDTos dTos ,CancellationToken cancellationToken)
         {
-
             var result = await _validator.ValidateAsync(dTos, cancellationToken);
+
             if (!result.IsValid)
             {
                 return BadRequest(result.Errors);
             }
+
             var appoinment = await _findByIdAppoinment.GetByIdAsync(appoinmentId, cancellationToken);
-            if (appoinment != null)
+            if (appoinment.IsSuccess)
             {
                 var appoinmnentNew = await _updateAppoinment.UpdateAsync(appoinmentId,dTos,cancellationToken);
-                return Ok(ApiResponse<AppoinmentDTos>.SuccessResponse(appoinmnentNew));
+                return Ok(appoinmnentNew.Value);
             }
-            return NotFound(ApiResponse<string>.ErrorResponse("Id not found"));
+            return NotFound(appoinment.Error);
         }
 
         [HttpGet("check-availability/service-catalog/{serviceId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IEnumerable<ServiceCatalogDTos>> CheckAppoinmentAvailabilityAsync([FromRoute] int serviceId ,CancellationToken cancellationToken)
+        public async Task<IActionResult> CheckAppoinmentAvailabilityAsync([FromRoute] int serviceId ,CancellationToken cancellationToken)
         {
             var serviceCatalog = await _checkAppoinmentAvailability.CheckAvailabilityAsync(serviceId,cancellationToken);
-            return serviceCatalog;
+            if (serviceCatalog.IsSuccess)
+            {
+                return Ok(serviceCatalog.Value);
+            }
+            return NotFound(serviceCatalog.Error);
         }
  
-        [HttpGet("availability-service/service-catalog/{serviceId}")]
+        [HttpGet("availability-service/service-catalog/{serviceCatalogId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IEnumerable<ServiceCatalogDTos>> AvailabilityServiceAsync([FromRoute] int serviceCatalogId, CancellationToken cancellationToken)
+        public async Task<IActionResult> AvailabilityServiceAsync([FromRoute] int serviceCatalogId, CancellationToken cancellationToken)
         {
             var serviceCatalogAvailability = await _getAppoinmentAvailabilityService.GetAvailabilityServiceAsync(serviceCatalogId,cancellationToken);
-            return serviceCatalogAvailability;
+            if (serviceCatalogAvailability.IsSuccess)
+            {   
+                return Ok(serviceCatalogAvailability.Value);
+            }
+
+            return NotFound(serviceCatalogAvailability.Error);
         }
 
         [HttpGet("last-added")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<AppoinmentDTos>> LastAddedAppoinmentAsync([FromQuery] FilterDate filterDate, CancellationToken cancellationToken)
+        public async Task<IActionResult> LastAddedAppoinmentAsync([FromQuery] FilterDate filterDate, CancellationToken cancellationToken)
         {
             var appoinment = await _getAppoinmentLastAdded.GetLastAddedOnDateAsync(filterDate,cancellationToken);
-            return Ok(appoinment);
+            if (appoinment.IsSuccess)
+            {
+                return Ok(appoinment.Value);
+            }
+            return BadRequest(appoinment.Error);
         }
     }
 }
