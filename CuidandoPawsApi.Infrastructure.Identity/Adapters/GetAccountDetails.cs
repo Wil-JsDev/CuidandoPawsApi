@@ -25,7 +25,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             if (user != null)
             {
 
-                AccountDto dto = new()
+               return new ()
                 {
                     FirstName = user.FirstName,
                     LastName = user.LastName,
@@ -34,7 +34,6 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
                     Email = user.Email
                 };
                 
-                return dto;
             }
 
             return new AccountDto();
