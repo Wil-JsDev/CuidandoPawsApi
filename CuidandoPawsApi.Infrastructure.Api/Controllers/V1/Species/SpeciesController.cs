@@ -2,6 +2,7 @@
 using CuidandoPawsApi.Application.Common;
 using CuidandoPawsApi.Application.DTOs.Species;
 using CuidandoPawsApi.Domain.Ports.UseCase.Species;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,10 +21,11 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
         private readonly IGetSpeciesLastAdded<SpeciesDTos> _getSpeciesLastAdded;
         private readonly IGetSpeciesOrderById<SpeciesDTos> _getOrderById;
         private readonly IDeleteSpecies<SpeciesDTos> _deleteSpecies;
+        private readonly IValidator<CreateUpdateSpecieDTos> _validator;
 
         public SpeciesController(ICreateSpecies<CreateUpdateSpecieDTos, SpeciesDTos> createSpecies, IGetSpecies<SpeciesDTos> getSpecies, IGetByIdSpecies<SpeciesDTos> getByIdSpecies, 
             IUpdateSpecies<CreateUpdateSpecieDTos, SpeciesDTos> updateSpecies,  IGetSpeciesLastAdded<SpeciesDTos> getSpeciesLastAdded, 
-            IGetSpeciesOrderById<SpeciesDTos> getOrderById, IDeleteSpecies<SpeciesDTos> deleteSpecies)
+            IGetSpeciesOrderById<SpeciesDTos> getOrderById, IDeleteSpecies<SpeciesDTos> deleteSpecies, IValidator<CreateUpdateSpecieDTos> validator)
         {
             _createSpecies = createSpecies;
             _getSpecies = getSpecies;
@@ -32,6 +34,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
             _getSpeciesLastAdded = getSpeciesLastAdded;
             _getOrderById = getOrderById;
             _deleteSpecies = deleteSpecies;
+            _validator = validator;
         }
 
         [HttpGet("all")]
@@ -55,12 +58,18 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
             return NotFound(ApiResponse<string>.ErrorResponse("Id not found"));
         }
 
-
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<SpeciesDTos>> CreateSpeciesAsync(CreateUpdateSpecieDTos specieDTos, CancellationToken cancellationToken)
         {
+
+            var result = await _validator.ValidateAsync(specieDTos, cancellationToken);
+            if (!result.IsValid)
+            {
+                return BadRequest(result.Errors);
+            }
+
             var speciesNew = await _createSpecies.AddAsync(specieDTos, cancellationToken);
             if (speciesNew != null)
             {
@@ -73,6 +82,14 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
         [HttpPatch("{id}")]
         public async Task<ActionResult<SpeciesDTos>> UpdateSpeciesAsync([FromRoute] int id,[FromBody] CreateUpdateSpecieDTos speciesDto, CancellationToken cancellationToken )
         {
+
+            var result = await _validator.ValidateAsync(speciesDto,cancellationToken);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(result.Errors);
+            }
+
             var speciesId = await _getByIdSpecies.GetById(id,cancellationToken);
             if (speciesId != null)
             {
