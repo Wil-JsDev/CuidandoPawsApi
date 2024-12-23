@@ -3,6 +3,7 @@ using CuidandoPawsApi.Application.DTOs.Species;
 using CuidandoPawsApi.Domain.Models;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase.Species;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace CuidandoPawsApi.Application.Adapters.SpeciesAdapt
             _mapper = mapper;
         }
 
-        public async Task<SpeciesDTos> UpdateAsync(int id, CreateUpdateSpecieDTos dtoStatus, CancellationToken cancellationToken)
+        public async Task<ResultT<SpeciesDTos>> UpdateAsync(int id, CreateUpdateSpecieDTos dtoStatus, CancellationToken cancellationToken)
         {
             var speciesId = await _speciesRepository.GetByIdAsync(id, cancellationToken);
 
@@ -31,10 +32,10 @@ namespace CuidandoPawsApi.Application.Adapters.SpeciesAdapt
                 speciesId = _mapper.Map<CreateUpdateSpecieDTos, Species>(dtoStatus, speciesId);
                 await _speciesRepository.UpdateAsync(speciesId);
                 var speciesDto = _mapper.Map<SpeciesDTos>(speciesId);
-                return speciesDto;
+                return ResultT<SpeciesDTos>.Success(speciesDto);
             }
 
-            return null;
+            return ResultT<SpeciesDTos>.Failure(Error.NotFound("404", "id not found"));
         }
     }
 }
