@@ -25,7 +25,7 @@ namespace CuidandoPawsApi.Infrastructure.Persistence.Adapters.Repository
             return query;
         }
 
-        public async Task<IEnumerable<Species>> GetOrderedByIdAsync(CancellationToken cancellationToken)
+        public async Task<IEnumerable<Species>> GetOrdereByIdAscSpeciesAsync(CancellationToken cancellationToken)
         {
             var query = await _context.Set<Species>().AsQueryable()
                     .OrderBy(s => s.Id)
