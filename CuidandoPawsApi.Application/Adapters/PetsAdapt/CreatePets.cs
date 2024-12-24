@@ -3,6 +3,7 @@ using CuidandoPawsApi.Application.DTOs.Pets;
 using CuidandoPawsApi.Domain.Models;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,17 +23,17 @@ namespace CuidandoPawsApi.Application.Adapters.PetsAdapt
             _mapper = mapper;
         }
 
-        public async Task<PetsDTos> AddAsync(CreatePetsDTos petDto, CancellationToken cancellationToken)
+        public async Task <ResultT<PetsDTos>> AddAsync(CreatePetsDTos petDto, CancellationToken cancellationToken)
         {
             var pets = _mapper.Map<Pets>(petDto);
             if (pets != null)
             {
                 await _petsRepository.AddAsync(pets,cancellationToken);
                 var petsDto = _mapper.Map<PetsDTos>(pets);
-                return petsDto;
+                return ResultT<PetsDTos>.Success(petsDto);
             }
 
-            return null;
+            return ResultT<PetsDTos>.Failure(Error.Failure("400", "Error entering data"));
         }
     }
 }
