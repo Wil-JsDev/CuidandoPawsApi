@@ -2,6 +2,7 @@
 using CuidandoPawsApi.Application.DTOs.MedicalRecord;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase.MedicalRecord;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,16 +23,16 @@ namespace CuidandoPawsApi.Application.Adapters.MedicalRecordAdapt
             _mapper = mapper;
         }
 
-        public async Task<MedicalRecordDTos> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task <ResultT<MedicalRecordDTos>> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var medicalRecordId = await _medicalRecordRepository.GetByIdAsync(id, cancellationToken);
             if (medicalRecordId != null)
             {
                 var medicalRecordDto = _mapper.Map<MedicalRecordDTos>(medicalRecordId);
-                return medicalRecordDto;
+                return ResultT<MedicalRecordDTos>.Success(medicalRecordDto);
             }
 
-            return null;
+            return ResultT<MedicalRecordDTos>.Failure(Error.NotFound("404", "Id not found"));
         }
     }
 }
