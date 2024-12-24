@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using CuidandoPawsApi.Application.DTOs.Species;
+using CuidandoPawsApi.Domain.Enum;
+using CuidandoPawsApi.Domain.Models;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase.Species;
 using CuidandoPawsApi.Domain.Utils;
@@ -23,23 +25,28 @@ namespace CuidandoPawsApi.Application.Adapters.SpeciesAdapt
             _mapper = mapper;
         }
 
-        public async Task <ResultT<IEnumerable<SpeciesDTos>>> GetOrderedByIdAsync(string direction,CancellationToken cancellationToken)
+        public async Task <ResultT<IEnumerable<SpeciesDTos>>> GetOrderedByIdAsync(string sort,string direction,CancellationToken cancellationToken)
         {
+            var sortMethods = CreateSortMethods();
 
-            if (direction == "asc".ToLower())
+            if (sortMethods.TryGetValue((sort.ToLower(), direction.ToLower()), out var sortMethod))
             {
-                var speciesOrderById = await _speciesRepository.GetOrdereByIdAscSpeciesAsync(cancellationToken);
-                var speciesDto = _mapper.Map<IEnumerable<SpeciesDTos>>(speciesOrderById);
+                var species = await sortMethod(cancellationToken);  
+                var speciesDto = _mapper.Map<IEnumerable<SpeciesDTos>>(species);  
                 return ResultT<IEnumerable<SpeciesDTos>>.Success(speciesDto);
             }
-            else if (direction == "desc".ToLower())
-            {
-                var speciesOrderByIdDesc = await _speciesRepository.GetOrdereByIdDescSpeciesAsync(cancellationToken);
-                var speciesDto = _mapper.Map<IEnumerable<SpeciesDTos>>(speciesOrderByIdDesc);
-                return ResultT<IEnumerable<SpeciesDTos>>.Success(speciesDto);
-            }
-
             return ResultT<IEnumerable<SpeciesDTos>>.Failure(Error.Failure("400","Invalid direction parameter. Accepted values are 'asc' or 'desc'."));
+        }
+
+        private Dictionary<(string sort, string direction), Func<CancellationToken, Task<IEnumerable<Species>>>> CreateSortMethods()
+        {
+            return new Dictionary<(string sort, string direction), Func<CancellationToken, Task<IEnumerable<Species>>>>()
+        {
+        { ("id", "asc"), async cancellationToken => await _speciesRepository.GetOrdereByIdAscSpeciesAsync(cancellationToken) },
+        { ("id", "desc"), async cancellationToken => await _speciesRepository.GetOrdereByIdDescSpeciesAsync(cancellationToken) },
+        { ("name", "asc"), async cancellationToken => await _speciesRepository.GetOrdereByNameAscSpeciesAsync(cancellationToken) },
+        { ("name", "desc"), async cancellationToken => await _speciesRepository.GetOrdereByNameDescSpeciesAsync(cancellationToken) }
+        };
         }
     }
 }

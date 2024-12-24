@@ -14,5 +14,9 @@ namespace CuidandoPawsApi.Domain.Ports.Repository
         Task<IEnumerable<Species>> GetOrdereByIdAscSpeciesAsync(CancellationToken cancellationToken);
 
         Task<IEnumerable<Species>> GetOrdereByIdDescSpeciesAsync(CancellationToken cancellationToken);
+
+        Task<IEnumerable<Species>> GetOrdereByNameAscSpeciesAsync(CancellationToken cancellationToken);
+
+        Task<IEnumerable<Species>> GetOrdereByNameDescSpeciesAsync(CancellationToken cancellationToken);
     }
 }

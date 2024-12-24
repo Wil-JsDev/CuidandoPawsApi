@@ -9,6 +9,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.Species
 {
     public interface IGetSpeciesOrderById<TDTos>
     {
-        Task <ResultT<IEnumerable<TDTos>>> GetOrderedByIdAsync(string direction,CancellationToken cancellationToken);
+        Task <ResultT<IEnumerable<TDTos>>> GetOrderedByIdAsync(string sort,string direction,CancellationToken cancellationToken);
     }
 }
