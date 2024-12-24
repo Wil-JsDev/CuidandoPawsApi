@@ -1,4 +1,5 @@
 ﻿using CuidandoPawsApi.Domain.Models;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.Appoinment
 {
     public interface IGetAppoinmentAvailabilityService<TDto>
     {
-        Task<IEnumerable<TDto>> GetAvailabilityServiceAsync(int serviceCatalog, CancellationToken cancellationToken);
+        Task <ResultT<IEnumerable<TDto>>> GetAvailabilityServiceAsync(int serviceCatalog, CancellationToken cancellationToken);
     }
 }

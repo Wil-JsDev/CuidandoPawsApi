@@ -3,6 +3,7 @@ using CuidandoPawsApi.Application.DTOs.Species;
 using CuidandoPawsApi.Domain.Models;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase.Species;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace CuidandoPawsApi.Application.Adapters.SpeciesAdapter
             _mapper = mapper;
         }
 
-        public async Task<SpeciesDTos> AddAsync(CreateUpdateSpecieDTos dtoStatus, CancellationToken cancellationToken)
+        public async Task <ResultT<SpeciesDTos>> AddAsync(CreateUpdateSpecieDTos dtoStatus, CancellationToken cancellationToken)
         {
             var species = _mapper.Map<Species>(dtoStatus);
 
@@ -30,10 +31,10 @@ namespace CuidandoPawsApi.Application.Adapters.SpeciesAdapter
             {
                 await  _speciesRepository.AddAsync(species, cancellationToken);
                 var speciesDto = _mapper.Map<SpeciesDTos>(species);
-                return speciesDto;
+                return ResultT<SpeciesDTos>.Success(speciesDto);
             }
 
-            return null;   
+            return ResultT<SpeciesDTos>.Failure(Error.Failure("400", "Error entering data"));
         }
     }
 }

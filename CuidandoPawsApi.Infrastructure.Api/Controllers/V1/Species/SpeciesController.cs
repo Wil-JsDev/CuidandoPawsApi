@@ -2,6 +2,8 @@
 using CuidandoPawsApi.Application.Common;
 using CuidandoPawsApi.Application.DTOs.Species;
 using CuidandoPawsApi.Domain.Ports.UseCase.Species;
+using CuidandoPawsApi.Domain.Utils;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,10 +22,11 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
         private readonly IGetSpeciesLastAdded<SpeciesDTos> _getSpeciesLastAdded;
         private readonly IGetSpeciesOrderById<SpeciesDTos> _getOrderById;
         private readonly IDeleteSpecies<SpeciesDTos> _deleteSpecies;
+        private readonly IValidator<CreateUpdateSpecieDTos> _validator;
 
         public SpeciesController(ICreateSpecies<CreateUpdateSpecieDTos, SpeciesDTos> createSpecies, IGetSpecies<SpeciesDTos> getSpecies, IGetByIdSpecies<SpeciesDTos> getByIdSpecies, 
             IUpdateSpecies<CreateUpdateSpecieDTos, SpeciesDTos> updateSpecies,  IGetSpeciesLastAdded<SpeciesDTos> getSpeciesLastAdded, 
-            IGetSpeciesOrderById<SpeciesDTos> getOrderById, IDeleteSpecies<SpeciesDTos> deleteSpecies)
+            IGetSpeciesOrderById<SpeciesDTos> getOrderById, IDeleteSpecies<SpeciesDTos> deleteSpecies, IValidator<CreateUpdateSpecieDTos> validator)
         {
             _createSpecies = createSpecies;
             _getSpecies = getSpecies;
@@ -32,6 +35,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
             _getSpeciesLastAdded = getSpeciesLastAdded;
             _getOrderById = getOrderById;
             _deleteSpecies = deleteSpecies;
+            _validator = validator;
         }
 
         [HttpGet("all")]
@@ -45,53 +49,66 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
         [HttpGet("{Id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SpeciesDTos>> GetByIdSpeciesAsync([FromRoute] int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetByIdSpeciesAsync([FromRoute] int id, CancellationToken cancellationToken)
         {
-            var speciesId = await _getByIdSpecies.GetById(id, cancellationToken);
-            if (speciesId != null)
+            var result = await _getByIdSpecies.GetById(id, cancellationToken);
+            if (result.IsSuccess)
             {
-                return Ok(ApiResponse<SpeciesDTos>.SuccessResponse(speciesId));
+                return Ok(result.Value);
             }
-            return NotFound(ApiResponse<string>.ErrorResponse("Id not found"));
+            return NotFound(result.Error);
         }
-
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<SpeciesDTos>> CreateSpeciesAsync(CreateUpdateSpecieDTos specieDTos, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateSpeciesAsync(CreateUpdateSpecieDTos specieDTos, CancellationToken cancellationToken)
         {
-            var speciesNew = await _createSpecies.AddAsync(specieDTos, cancellationToken);
-            if (speciesNew != null)
+
+            var result = await _validator.ValidateAsync(specieDTos, cancellationToken);
+            if (!result.IsValid)
             {
-                return Ok(ApiResponse<SpeciesDTos>.SuccessResponse(speciesNew));
+                return BadRequest(result.Errors);
             }
 
-            return BadRequest(ApiResponse<string>.ErrorResponse("There were problems with the data entered"));
+            var resultSpecies = await _createSpecies.AddAsync(specieDTos, cancellationToken);
+            if (resultSpecies.IsSuccess)
+            {
+                return Ok(resultSpecies.Value);
+            }
+            return BadRequest(resultSpecies.Error);
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult<SpeciesDTos>> UpdateSpeciesAsync([FromRoute] int id,[FromBody] CreateUpdateSpecieDTos speciesDto, CancellationToken cancellationToken )
+        public async Task<IActionResult> UpdateSpeciesAsync([FromRoute] int id,[FromBody] CreateUpdateSpecieDTos speciesDto, CancellationToken cancellationToken )
         {
-            var speciesId = await _getByIdSpecies.GetById(id,cancellationToken);
-            if (speciesId != null)
+
+            var result = await _validator.ValidateAsync(speciesDto,cancellationToken);
+
+            if (!result.IsValid)
             {
-                var speciesUpdate = await _updateSpecies.UpdateAsync(id,speciesDto,cancellationToken);
-                return Ok(ApiResponse<SpeciesDTos>.SuccessResponse(speciesUpdate));
+                return BadRequest(result.Errors);
             }
 
-            return NotFound(ApiResponse<SpeciesDTos>.ErrorResponse("There were problems with the data entered"));
+            var resultSpecies = await _getByIdSpecies.GetById(id,cancellationToken);
+            if (resultSpecies.IsSuccess)
+            {
+                var speciesUpdate = await _updateSpecies.UpdateAsync(id,speciesDto,cancellationToken);
+                return Ok(speciesUpdate.Value);
+            }
+
+            return NotFound(resultSpecies.Error);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<SpeciesDTos>> DeleteSpeciesAsync([FromRoute] int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> DeleteSpeciesAsync([FromRoute] int id, CancellationToken cancellationToken)
         {
-            var speciesId = await _deleteSpecies.DeleteSpeciesAsync(id,cancellationToken);
-            if (speciesId != null)
+            var result = await _deleteSpecies.DeleteSpeciesAsync(id,cancellationToken);
+            if (result.IsSuccess)
             {
                 return NoContent();
             }
-            return NotFound(ApiResponse<string>.ErrorResponse("Id not found"));
+            return NotFound(result.Error);
         }
 
         [HttpGet("last-added")]
@@ -104,10 +121,15 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<SpeciesDTos>> GetOrderedByISpeciesAsync([FromQuery] string sort, [FromQuery] string direction, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetOrderedByISpeciesAsync([FromQuery] string sort, [FromQuery] string direction, CancellationToken cancellationToken)
         {
-            var speciesById = await _getOrderById.GetOrderedByIdAsync(direction,cancellationToken);
-            return Ok(speciesById);
+            var result = await _getOrderById.GetOrderedByIdAsync(sort,direction,cancellationToken);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+
+            return BadRequest(result.Error);
         }
 
     }

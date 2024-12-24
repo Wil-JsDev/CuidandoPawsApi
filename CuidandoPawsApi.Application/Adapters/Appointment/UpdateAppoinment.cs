@@ -3,6 +3,7 @@ using CuidandoPawsApi.Application.DTOs.Appoinment;
 using CuidandoPawsApi.Domain.Models;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase.Appoinment;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace CuidandoPawsApi.Application.Adapters.Appointment
             _mapper = mapper;
         }
 
-        public async Task<AppoinmentDTos> UpdateAsync(int id, CreateUpdateAppoinmentDTos dtoStatus, CancellationToken cancellationToken)
+        public async Task <ResultT<AppoinmentDTos>> UpdateAsync(int id, CreateUpdateAppoinmentDTos dtoStatus, CancellationToken cancellationToken)
         {
             var appoinmentId = await _appoinmentRepository.GetByIdAsync(id, cancellationToken);
 
@@ -31,11 +32,10 @@ namespace CuidandoPawsApi.Application.Adapters.Appointment
                 appoinmentId = _mapper.Map<CreateUpdateAppoinmentDTos, Appoinment>(dtoStatus, appoinmentId);
                 await _appoinmentRepository.UpdateAsync(appoinmentId);
                 var appoinmentDto = _mapper.Map<AppoinmentDTos>(appoinmentId);
-                return appoinmentDto;
+                return ResultT<AppoinmentDTos>.Success(appoinmentDto);
             }
 
-
-            return null;
+            return ResultT<AppoinmentDTos>.Failure(Error.NotFound("404", "Id not found"));
         }
     }
 }
