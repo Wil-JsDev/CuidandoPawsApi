@@ -3,6 +3,7 @@ using CuidandoPawsApi.Application.DTOs.Pets;
 using CuidandoPawsApi.Domain.Pagination;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,17 +24,17 @@ namespace CuidandoPawsApi.Application.Adapters.PetsAdapt
             _mapper = mapper;
         }
 
-        public async Task<PagedResult<PetsDTos>> ListWithPaginationAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
+        public async Task <ResultT<PagedResult<PetsDTos>>> ListWithPaginationAsync(int pageNumber, int pageSize, CancellationToken cancellationToken)
         {
             var petsPagedWithNumbe = await _petsRepository.GetPagedPetsAsync(pageNumber, pageSize, cancellationToken);
 
             if (petsPagedWithNumbe != null)
             {
                 var petsPagedDto = _mapper.Map<PagedResult<PetsDTos>>(petsPagedWithNumbe);
-                return petsPagedDto;
+                return ResultT<PagedResult<PetsDTos>>.Success(petsPagedDto);
             }
 
-            return null;
+            return ResultT<PagedResult<PetsDTos>>.Failure(Error.Failure("400", "No pets found"));
         }
     }
 }
