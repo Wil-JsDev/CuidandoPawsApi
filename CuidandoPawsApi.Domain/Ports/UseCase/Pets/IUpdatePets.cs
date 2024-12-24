@@ -1,6 +1,8 @@
+using CuidandoPawsApi.Domain.Utils;
+
 namespace CuidandoPawsApi.Domain.Ports.UseCase;
 
 public interface IUpdatePets<TDtoStatus, TDto>
 {
-    Task<TDto> UpdateAsync(int id,TDtoStatus dto, CancellationToken cancellationToken);
+    Task <ResultT<TDto>> UpdateAsync(int id,TDtoStatus dto, CancellationToken cancellationToken);
 }

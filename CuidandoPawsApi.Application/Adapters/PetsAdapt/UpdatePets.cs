@@ -3,6 +3,7 @@ using CuidandoPawsApi.Application.DTOs.Pets;
 using CuidandoPawsApi.Domain.Models;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace CuidandoPawsApi.Application.Adapters.PetsAdapt
             _mapper = mapper;
         }
 
-        public async Task<PetsDTos> UpdateAsync(int id, UpdatePetsDTos dto, CancellationToken cancellationToken)
+        public async Task<ResultT<PetsDTos>> UpdateAsync(int id, UpdatePetsDTos dto, CancellationToken cancellationToken)
         {
             var pet = await _petsRepository.GetByIdAsync(id,cancellationToken);
             if (pet != null)
@@ -31,10 +32,10 @@ namespace CuidandoPawsApi.Application.Adapters.PetsAdapt
                 await _petsRepository.UpdateAsync(pet);
 
                 var petDto = _mapper.Map<PetsDTos>(pet);
-                return petDto;
+                return ResultT<PetsDTos>.Success(petDto);
             }
 
-            return null;
+            return ResultT<PetsDTos>.Failure(Error.NotFound("404", "Id not found"));
         }
     }
 }
