@@ -22,6 +22,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Extensions
             services.AddScoped<IValidator<CreatePetsDTos>, CreatePets>();
             services.AddScoped<IValidator<UpdatePetsDTos>, UpdatePets>();
             services.AddScoped<IValidator<CreateServiceCatalogDTos>,CreateServiceCatalogValidation>();
+            services.AddScoped<IValidator<UpdateServiceCatalogDTos>, UpdateServiceCatalogValidation>();
         }
     }
 }
