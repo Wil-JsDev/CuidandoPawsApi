@@ -3,6 +3,7 @@ using CuidandoPawsApi.Application.DTOs.MedicalRecord;
 using CuidandoPawsApi.Domain.Models;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase.MedicalRecord;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace CuidandoPawsApi.Application.Adapters.MedicalRecordAdapt
             _mapper = mapper;
         }
 
-        public async Task<MedicalRecordDTos> AddAsync(CreateUpdateMedicalRecordDTos dtoStatus, CancellationToken cancellationToken)
+        public async Task <ResultT<MedicalRecordDTos>> AddAsync(CreateUpdateMedicalRecordDTos dtoStatus, CancellationToken cancellationToken)
         {
             var medicalRecord = _mapper.Map<MedicalRecord>(dtoStatus);
 
@@ -30,10 +31,10 @@ namespace CuidandoPawsApi.Application.Adapters.MedicalRecordAdapt
             {
                 await _medicalRecordRepository.AddAsync(medicalRecord,cancellationToken);
                 var medicalRecordDto = _mapper.Map<MedicalRecordDTos>(medicalRecord);
-                return medicalRecordDto;
+                return ResultT<MedicalRecordDTos>.Success(medicalRecordDto);
             }
 
-            return null;
+            return ResultT<MedicalRecordDTos>.Failure(Error.Failure("400", "Error entering data"));
         }
     }
 }

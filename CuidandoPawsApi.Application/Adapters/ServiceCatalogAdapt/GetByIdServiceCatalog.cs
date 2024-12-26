@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
+using CuidandoPawsApi.Domain.Models;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase.ServiceCatalog;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +23,7 @@ namespace CuidandoPawsApi.Application.Adapters.ServiceCatalogAdapt
             _mapper = mapper;
         }
 
-        public async Task<ServiceCatalogDTos> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task <ResultT<ServiceCatalogDTos>> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var serviceCatalogId = await _serviceCatalogRepository.GetByIdAsync(id, cancellationToken);
 
@@ -29,9 +31,9 @@ namespace CuidandoPawsApi.Application.Adapters.ServiceCatalogAdapt
             {
                 var serviceCatalogDto = _mapper.Map<ServiceCatalogDTos>(serviceCatalogId);
 
-                return serviceCatalogDto;
+                return ResultT<ServiceCatalogDTos>.Success(serviceCatalogDto);
             }
-            return null;
+            return ResultT<ServiceCatalogDTos>.Failure(Error.NotFound("404", "id not found"));
         }
     }
 }

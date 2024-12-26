@@ -2,6 +2,7 @@
 using CuidandoPawsApi.Application.DTOs.MedicalRecord;
 using CuidandoPawsApi.Domain.Ports.Repository;
 using CuidandoPawsApi.Domain.Ports.UseCase.MedicalRecord;
+using CuidandoPawsApi.Domain.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace CuidandoPawsApi.Application.Adapters.MedicalRecordAdapt
         }
 
 
-        public async Task<MedicalRecordDTos> DeleteAsync(int id, CancellationToken cancellationToken)
+        public async Task <ResultT<MedicalRecordDTos>> DeleteAsync(int id, CancellationToken cancellationToken)
         {
             var medicalRecordId = await _medicalRecordRepository.GetByIdAsync(id,cancellationToken);
             if (medicalRecordId != null)
@@ -30,10 +31,10 @@ namespace CuidandoPawsApi.Application.Adapters.MedicalRecordAdapt
                await _medicalRecordRepository.DeleteAsync(medicalRecordId,cancellationToken);
 
                 var medicalRecordDto = _mapper.Map<MedicalRecordDTos>(medicalRecordId);
-                return medicalRecordDto;
+                return ResultT<MedicalRecordDTos>.Success(medicalRecordDto);
             }
 
-            return null;
+            return ResultT<MedicalRecordDTos>.Failure(Error.NotFound("404", "Id not found"));
         }
     }
 }

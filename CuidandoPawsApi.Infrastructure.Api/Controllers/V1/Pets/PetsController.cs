@@ -4,6 +4,7 @@ using CuidandoPawsApi.Application.DTOs.Pets;
 using CuidandoPawsApi.Domain.Pagination;
 using CuidandoPawsApi.Domain.Ports.UseCase;
 using CuidandoPawsApi.Domain.Ports.UseCase.Pets;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -22,9 +23,12 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         private readonly IDeletePets<PetsDTos> _deletePets;
         private readonly IUpdatePets<UpdatePetsDTos, PetsDTos> _updatePets;
         private readonly IGetPetsLastAddedOfDay<PetsDTos> _getPetsLastAddedOfDay;
+        private readonly IValidator<CreatePetsDTos> _createValidator;
+        private readonly IValidator<UpdatePetsDTos> _updateValidator;
 
         public PetsController(ICreatePets<CreatePetsDTos, PetsDTos> createPets, IGetPagedPets<PetsDTos> getPagedPets, IGetByIdPets<PetsDTos> getByIdPets, IDeletePets<PetsDTos> deletePets,
-            IUpdatePets<UpdatePetsDTos, PetsDTos> updatePets, IGetPetsLastAddedOfDay<PetsDTos> getPetsLastAddedOfDay)
+            IUpdatePets<UpdatePetsDTos, PetsDTos> updatePets, IGetPetsLastAddedOfDay<PetsDTos> getPetsLastAddedOfDay, 
+            IValidator<CreatePetsDTos> createValidator, IValidator<UpdatePetsDTos> updateValidator)
         {
             _createPets = createPets;
             _getPagedPets = getPagedPets;
@@ -32,20 +36,29 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
             _deletePets = deletePets;
             _updatePets = updatePets;
             _getPetsLastAddedOfDay = getPetsLastAddedOfDay;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<PetsDTos>> CreatePetsAsync([FromBody] CreatePetsDTos createPetsD, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreatePetsAsync([FromBody] CreatePetsDTos createPetsDTos, CancellationToken cancellationToken)
         {
-            var petsNew = await _createPets.AddAsync(createPetsD, cancellationToken);
-            if (petsNew != null)
+            var result = await _createValidator.ValidateAsync(createPetsDTos, cancellationToken);
+
+            if (!result.IsValid)
             {
-                return Ok(ApiResponse<PetsDTos>.SuccessResponse(petsNew));
+                return BadRequest(result.Errors);
             }
 
-            return BadRequest(ApiResponse<string>.ErrorResponse("Error entering data"));
+            var resultPets = await _createPets.AddAsync(createPetsDTos, cancellationToken);
+            if (resultPets.IsSuccess)
+            {
+                return Ok(resultPets.Value);
+            }
+
+            return BadRequest(resultPets.Error);
 
         }
 
@@ -54,26 +67,26 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PetsDTos>> DeletePetsAsync([FromRoute] int id, CancellationToken cancellationToken)
         {
-            var pets = await _deletePets.DeleteAsync(id,cancellationToken);
-            if (pets != null)
+            var result = await _deletePets.DeleteAsync(id,cancellationToken);
+            if (result.IsSuccess)
             {
                 return NoContent();
             }
 
-            return NotFound(ApiResponse<string>.ErrorResponse("id not found"));
+            return NotFound(result.Error);
         }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<PetsDTos>> GetByIdPetsAsync(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetByIdPetsAsync(int id, CancellationToken cancellationToken)
         {
-            var petsId = await _getByIdPets.GetByIdAsync(id,cancellationToken);
-            if (petsId != null)
+            var result = await _getByIdPets.GetByIdAsync(id,cancellationToken);
+            if (result.IsSuccess)
             {
-                return Ok(ApiResponse<PetsDTos>.SuccessResponse(petsId));
+                return Ok(result.Value);
             }
-            return NotFound(ApiResponse<string>.ErrorResponse("id not found"));
+            return NotFound(result.Error);
         }
 
         [HttpPut("{id}")]
@@ -81,14 +94,20 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PetsDTos>> UpdatePetsAsync([FromRoute] int id, [FromBody] UpdatePetsDTos updatePetsDTos, CancellationToken cancellationToken )
         {
-            var petId = await _getByIdPets.GetByIdAsync(id,cancellationToken);
-            if (petId != null)
+
+            var result = await _updateValidator.ValidateAsync(updatePetsDTos, cancellationToken);
+            if (!result.IsValid)
             {
-                var petNew = await _updatePets.UpdateAsync(id,updatePetsDTos,cancellationToken);
-                return Ok(ApiResponse<PetsDTos>.SuccessResponse(petNew));
+                return BadRequest(result.Errors);
             }
 
-            return NotFound(ApiResponse<string>.ErrorResponse("id not found"));
+            var resultPets = await _getByIdPets.GetByIdAsync(id,cancellationToken);
+            if (resultPets.IsSuccess)
+            {
+                var petNew = await _updatePets.UpdateAsync(id,updatePetsDTos,cancellationToken);
+                return Ok(petNew.Value);
+            }
+            return NotFound(resultPets.Error);
 
         }
 
@@ -102,10 +121,15 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
 
         [HttpGet("pagination")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<PetsDTos>> GetPagedPetsAsync([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetPagedPetsAsync([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
         {
-            var pets =  await _getPagedPets.ListWithPaginationAsync(pageNumber,pageSize,cancellationToken);
-            return Ok(pets);
+            var result =  await _getPagedPets.ListWithPaginationAsync(pageNumber,pageSize,cancellationToken);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Value);
+            }
+
+            return BadRequest(result.Error);
         }
 
     }

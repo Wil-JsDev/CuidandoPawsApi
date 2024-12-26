@@ -1,6 +1,8 @@
+using CuidandoPawsApi.Domain.Utils;
+
 namespace CuidandoPawsApi.Domain.Ports.UseCase;
 
 public interface IDeletePets<TDto>
 {
-    Task<TDto> DeleteAsync(int petId, CancellationToken cancellationToken);
+    Task <ResultT<TDto>> DeleteAsync(int petId, CancellationToken cancellationToken);
 }
