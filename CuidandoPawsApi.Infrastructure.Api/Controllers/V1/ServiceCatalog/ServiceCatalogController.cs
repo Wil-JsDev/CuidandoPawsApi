@@ -2,6 +2,7 @@
 using CuidandoPawsApi.Application.Common;
 using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Domain.Ports.UseCase.ServiceCatalog;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,16 +18,21 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
         private readonly IGetByIdServiceCatalog<ServiceCatalogDTos> _getByIdServiceCatalog;
         private readonly IUpdateServiceCatalog<ServiceCatalogDTos, UpdateServiceCatalogDTos> _updateServiceCatalog;
         private readonly IDeleteServiceCatalog<ServiceCatalogDTos> _deleteServiceCatalog;
+        private readonly IValidator<CreateServiceCatalogDTos> _createValidator;
+        private readonly IValidator<UpdateServiceCatalogDTos> _updateValidator;
 
         public ServiceCatalogController(ICreateServiceCatalog<ServiceCatalogDTos,CreateServiceCatalogDTos> createServiceCatalog, IGetServiceCatalog<ServiceCatalogDTos> getServiceCatalog, 
             IGetByIdServiceCatalog<ServiceCatalogDTos> getByIdServiceCatalog, IUpdateServiceCatalog<ServiceCatalogDTos, UpdateServiceCatalogDTos> updateServiceCatalog,
-            IDeleteServiceCatalog<ServiceCatalogDTos> deleteServiceCatalog)
+            IDeleteServiceCatalog<ServiceCatalogDTos> deleteServiceCatalog, IValidator<CreateServiceCatalogDTos> createValidator,
+            IValidator<UpdateServiceCatalogDTos> updateValidator)
         {
             _createServiceCatalog = createServiceCatalog;
             _getServiceCatalog = getServiceCatalog;
             _getByIdServiceCatalog = getByIdServiceCatalog;
             _updateServiceCatalog = updateServiceCatalog;
             _deleteServiceCatalog = deleteServiceCatalog;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
 
@@ -50,26 +56,39 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
         [HttpPost]
         public async Task<IActionResult> CreateServiceCatalogAsync(CreateServiceCatalogDTos catalogDTos, CancellationToken cancellationToken)
         {
-            var result = await _createServiceCatalog.CreateAsync(catalogDTos,cancellationToken);
-            if (result.IsSuccess)
+            var result = await _createValidator.ValidateAsync(catalogDTos, cancellationToken);
+            if (!result.IsValid)
             {
-                return Ok(result.Value);
+                return BadRequest(result.Errors);
             }
 
-            return BadRequest(result.Error);
+            var resultServiceCatalog = await _createServiceCatalog.CreateAsync(catalogDTos,cancellationToken);
+            if (resultServiceCatalog.IsSuccess)
+            {
+                return Ok(resultServiceCatalog.Value);
+            }
+
+            return BadRequest(resultServiceCatalog.Error);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateServicerCatalogAsync([FromRoute] int id, UpdateServiceCatalogDTos catalogDTos, CancellationToken cancellationToken)
         {
-            var result = await _getByIdServiceCatalog.GetByIdAsync(id,cancellationToken);
-            if (result.IsSuccess)
+            var result = await _updateValidator.ValidateAsync(catalogDTos,cancellationToken);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            var resultServiceCatalog = await _getByIdServiceCatalog.GetByIdAsync(id,cancellationToken);
+            if (resultServiceCatalog.IsSuccess)
             {
                 var serviceCatalog = await _updateServiceCatalog.UpdateAsync(id,catalogDTos,cancellationToken);
-                return Ok(result.Value);
+                return Ok(resultServiceCatalog.Value);
             }
                 
-                return NotFound(result.Error);
+                return NotFound(resultServiceCatalog.Error);
         }
 
         [HttpDelete("{id}")]

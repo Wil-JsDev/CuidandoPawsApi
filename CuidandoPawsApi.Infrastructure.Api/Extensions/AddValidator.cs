@@ -1,10 +1,12 @@
 ﻿using CuidandoPawsApi.Application.DTOs.Appoinment;
 using CuidandoPawsApi.Application.DTOs.MedicalRecord;
 using CuidandoPawsApi.Application.DTOs.Pets;
+using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Application.DTOs.Species;
 using CuidandoPawsApi.Infrastructure.Api.Validations.Appoinment;
 using CuidandoPawsApi.Infrastructure.Api.Validations.MedicalRecord;
 using CuidandoPawsApi.Infrastructure.Api.Validations.Pets;
+using CuidandoPawsApi.Infrastructure.Api.Validations.ServiceCatalog;
 using CuidandoPawsApi.Infrastructure.Api.Validations.Species;
 using FluentValidation;
 
@@ -19,6 +21,8 @@ namespace CuidandoPawsApi.Infrastructure.Api.Extensions
             services.AddScoped<IValidator<CreateUpdateMedicalRecordDTos>, CreateUpdateMedicalRecord>();
             services.AddScoped<IValidator<CreatePetsDTos>, CreatePets>();
             services.AddScoped<IValidator<UpdatePetsDTos>, UpdatePets>();
+            services.AddScoped<IValidator<CreateServiceCatalogDTos>,CreateServiceCatalogValidation>();
+            services.AddScoped<IValidator<UpdateServiceCatalogDTos>, UpdateServiceCatalogValidation>();
         }
     }
 }
