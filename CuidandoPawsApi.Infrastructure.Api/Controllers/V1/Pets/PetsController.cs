@@ -4,6 +4,7 @@ using CuidandoPawsApi.Application.DTOs.Pets;
 using CuidandoPawsApi.Domain.Pagination;
 using CuidandoPawsApi.Domain.Ports.UseCase;
 using CuidandoPawsApi.Domain.Ports.UseCase.Pets;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -22,9 +23,12 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         private readonly IDeletePets<PetsDTos> _deletePets;
         private readonly IUpdatePets<UpdatePetsDTos, PetsDTos> _updatePets;
         private readonly IGetPetsLastAddedOfDay<PetsDTos> _getPetsLastAddedOfDay;
+        private readonly IValidator<CreatePetsDTos> _createValidator;
+        private readonly IValidator<UpdatePetsDTos> _updateValidator;
 
         public PetsController(ICreatePets<CreatePetsDTos, PetsDTos> createPets, IGetPagedPets<PetsDTos> getPagedPets, IGetByIdPets<PetsDTos> getByIdPets, IDeletePets<PetsDTos> deletePets,
-            IUpdatePets<UpdatePetsDTos, PetsDTos> updatePets, IGetPetsLastAddedOfDay<PetsDTos> getPetsLastAddedOfDay)
+            IUpdatePets<UpdatePetsDTos, PetsDTos> updatePets, IGetPetsLastAddedOfDay<PetsDTos> getPetsLastAddedOfDay, 
+            IValidator<CreatePetsDTos> createValidator, IValidator<UpdatePetsDTos> updateValidator)
         {
             _createPets = createPets;
             _getPagedPets = getPagedPets;
@@ -32,14 +36,23 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
             _deletePets = deletePets;
             _updatePets = updatePets;
             _getPetsLastAddedOfDay = getPetsLastAddedOfDay;
+            _createValidator = createValidator;
+            _updateValidator = updateValidator;
         }
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreatePetsAsync([FromBody] CreatePetsDTos createPetsD, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreatePetsAsync([FromBody] CreatePetsDTos createPetsDTos, CancellationToken cancellationToken)
         {
-            var resultPets = await _createPets.AddAsync(createPetsD, cancellationToken);
+            var result = await _createValidator.ValidateAsync(createPetsDTos, cancellationToken);
+
+            if (!result.IsValid)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            var resultPets = await _createPets.AddAsync(createPetsDTos, cancellationToken);
             if (resultPets.IsSuccess)
             {
                 return Ok(resultPets.Value);
@@ -81,13 +94,20 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PetsDTos>> UpdatePetsAsync([FromRoute] int id, [FromBody] UpdatePetsDTos updatePetsDTos, CancellationToken cancellationToken )
         {
-            var result = await _getByIdPets.GetByIdAsync(id,cancellationToken);
-            if (result.IsSuccess)
+
+            var result = await _updateValidator.ValidateAsync(updatePetsDTos, cancellationToken);
+            if (!result.IsValid)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            var resultPets = await _getByIdPets.GetByIdAsync(id,cancellationToken);
+            if (resultPets.IsSuccess)
             {
                 var petNew = await _updatePets.UpdateAsync(id,updatePetsDTos,cancellationToken);
                 return Ok(petNew.Value);
             }
-            return NotFound(result.Error);
+            return NotFound(resultPets.Error);
 
         }
 
