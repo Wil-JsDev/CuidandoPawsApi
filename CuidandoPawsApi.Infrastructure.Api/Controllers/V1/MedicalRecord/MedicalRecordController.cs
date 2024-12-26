@@ -6,6 +6,7 @@ using CuidandoPawsApi.Application.DTOs.Pets;
 using CuidandoPawsApi.Domain.Ports.UseCase;
 using CuidandoPawsApi.Domain.Ports.UseCase.MedicalRecord;
 using CuidandoPawsApi.Domain.Utils;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,15 +21,17 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         private readonly IGetByIdMedicalRecord<MedicalRecordDTos> _getByIdMedicalRecord;
         private readonly IUpdateMedicalRecord<CreateUpdateMedicalRecordDTos, MedicalRecordDTos> _updateMedicalRecord;
         private readonly IGetMedicalRecord<MedicalRecordDTos> _getMedicalRecord;
+        private readonly IValidator<CreateUpdateMedicalRecordDTos> _validator;
 
         public MedicalRecordController(ICreateMedicalRecord<CreateUpdateMedicalRecordDTos, MedicalRecordDTos> createMedicalRecord,
             IGetByIdMedicalRecord<MedicalRecordDTos> getByIdMedicalRecord, IUpdateMedicalRecord<CreateUpdateMedicalRecordDTos, MedicalRecordDTos> updateMedicalRecord,
-            IGetMedicalRecord<MedicalRecordDTos> getMedicalRecord)
+            IGetMedicalRecord<MedicalRecordDTos> getMedicalRecord, IValidator<CreateUpdateMedicalRecordDTos> validator)
         {
             _createMedicalRecord = createMedicalRecord;
             _getByIdMedicalRecord = getByIdMedicalRecord;
             _updateMedicalRecord = updateMedicalRecord; 
             _getMedicalRecord = getMedicalRecord;
+            _validator = validator;
         }
 
 
@@ -61,6 +64,13 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CreateMedicalRecordAsync([FromBody] CreateUpdateMedicalRecordDTos medicalRecordDTos, CancellationToken cancellationToken)
         {
+
+            var resultValidation = await _validator.ValidateAsync(medicalRecordDTos,cancellationToken);
+            if (!resultValidation.IsValid)
+            {
+                return BadRequest(resultValidation.Errors);
+            }
+
             var result = await _createMedicalRecord.AddAsync(medicalRecordDTos, cancellationToken);
 
             if (result.IsSuccess)
@@ -76,6 +86,13 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateMedicalRecordAsync([FromRoute] int id, [FromBody] CreateUpdateMedicalRecordDTos updateMedicalRecordDTos, CancellationToken cancellationToken)
         {
+
+            var resultValidation = await _validator.ValidateAsync(updateMedicalRecordDTos,cancellationToken);
+            if (!resultValidation.IsValid)
+            {
+                return BadRequest(resultValidation.Errors);
+            }
+
             var result = await _getByIdMedicalRecord.GetByIdAsync(id,cancellationToken);
             if (result.IsSuccess)
             {
