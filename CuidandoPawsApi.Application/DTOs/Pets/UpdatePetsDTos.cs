@@ -8,7 +8,7 @@ namespace CuidandoPawsApi.Application.DTOs.Pets
 {
     public class UpdatePetsDTos
     {
-        public string? NampePaws {  get; set; }
+        public string? NamePaws {  get; set; }
 
         public string? Bred { get; set; }
 
