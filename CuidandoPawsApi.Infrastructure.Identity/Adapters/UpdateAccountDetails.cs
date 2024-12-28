@@ -47,7 +47,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
                 return accountDto;
             }
 
-            return new AccountDto();
+            return null;
         }
     }
 }
