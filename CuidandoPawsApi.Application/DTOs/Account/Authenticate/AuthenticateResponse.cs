@@ -25,6 +25,8 @@ namespace CuidandoPawsApi.Application.DTOs.Account.Authenticate
        
        public bool? HasError { get; set; }
 
+       public int StatusCode { get; set; }
+
        public string? Error { get; set; }
        
        public string? JWTToken { get; set; }

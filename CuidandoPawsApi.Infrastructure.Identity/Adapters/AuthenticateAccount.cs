@@ -42,6 +42,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
+                response.StatusCode = 404;
                 response.HasError = true;
                 response.Error = $"No account registered with {request.Email}";
                 return response;
@@ -52,12 +53,14 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             if (!result.Succeeded)
             {
                 response.HasError = true;
+                response.StatusCode = 400;
                 response.Error = $"Invalid credentials for {request.Email}";
                 return response;
             }
 
             if (!user.EmailConfirmed)
             {
+                response.StatusCode = 400;
                 response.HasError = true;
                 response.Error = $"Account no confirmed for {request.Email}";
                 return response;
