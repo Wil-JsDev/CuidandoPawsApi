@@ -116,16 +116,21 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         public async Task<IActionResult> AuthenticateAsync(AuthenticateRequest request)
         {
             var authenticateRequest = await _authenticateAccount.AuthenticateAsync(request);
+
             if (authenticateRequest.StatusCode == 404)
             {
-                return NotFound(authenticateRequest);
-            }
-            else if (authenticateRequest.StatusCode == 400)
+              return NotFound(ApiResponse<string>.ErrorResponse($"this {request.Email} email not found "));
+
+            }else if (authenticateRequest.StatusCode == 400)
             {
-                return BadRequest(authenticateRequest);
+                return BadRequest(ApiResponse<string>.ErrorResponse($"Account no confirmed for {request.Email}"));
+            }
+            else if (authenticateRequest.StatusCode == 401)
+            {
+                return Unauthorized(ApiResponse<string>.ErrorResponse($"Invalid credentials for {request.Email}"));
             }
 
-            return Ok(authenticateRequest);
+            return Ok(ApiResponse<AuthenticateResponse>.SuccessResponse(authenticateRequest));
         }
 
         [HttpPost("forgot-password")]
