@@ -34,17 +34,12 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
         public async Task<AuthenticateResponse> AuthenticateAsync(AuthenticateRequest request)
         {
 
-            AuthenticateResponse response = new()
-            {
-                HasError = false
-            };
+            AuthenticateResponse response = new();
 
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
                 response.StatusCode = 404;
-                response.HasError = true;
-                response.Error = $"No account registered with {request.Email}";
                 return response;
             }
 
@@ -52,17 +47,13 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
 
             if (!result.Succeeded)
             {
-                response.HasError = true;
-                response.StatusCode = 400;
-                response.Error = $"Invalid credentials for {request.Email}";
+                response.StatusCode = 401;
                 return response;
             }
 
             if (!user.EmailConfirmed)
             {
                 response.StatusCode = 400;
-                response.HasError = true;
-                response.Error = $"Account no confirmed for {request.Email}";
                 return response;
             }
 
@@ -97,19 +88,19 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
 
             var claim = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName), //El dueño de ese token (sub)
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), //Es un identificador unico, es como el ID del token
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserName), //The owner of that token (sub)
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), //It is a unique identifier, it is like the token ID
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("id", user.Id), //Claim personalizado
+                new Claim("id", user.Id), //Custom Claim
             }
             .Union(userClaims)
             .Union(roleClaims);
 
-            //Generar llave simetrica de seguridad
+            //Generate symmetric security key
             var symmectricSecutityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JWTSettings.Key));
             var signingCredetials = new SigningCredentials(symmectricSecutityKey, SecurityAlgorithms.HmacSha256);
 
-            //Este es el token simetrica 
+            //This is the symmetric token
             var jwtSecurityToken = new JwtSecurityToken(
                 issuer: _JWTSettings.Issuer,
                 audience: _JWTSettings.Audience,
