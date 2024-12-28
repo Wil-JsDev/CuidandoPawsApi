@@ -8,6 +8,8 @@ namespace CuidandoPawsApi.Application.DTOs.Account
 {
     public class AccountDto
     {
+        public string? UserId { get; set; }
+
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; }

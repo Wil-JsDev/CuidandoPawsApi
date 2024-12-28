@@ -27,6 +27,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
 
                return new ()
                 {
+                    UserId = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Username = user.UserName,
@@ -36,8 +37,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
                 
             }
 
-            return new AccountDto();
-
+            return null;
         }
     }
 }
