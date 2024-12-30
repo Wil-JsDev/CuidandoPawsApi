@@ -61,6 +61,8 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
 
             response.Id = user.Id;
             response.Username = user.UserName;
+            response.FirstName = user.FirstName;
+            response.LastName = user.LastName;
             response.Email = user.Email;
 
             var rolesList = await _userManager.GetRolesAsync(user).ConfigureAwait(false);
