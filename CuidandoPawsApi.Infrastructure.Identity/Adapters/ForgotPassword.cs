@@ -39,7 +39,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             if (account == null)
             {
                 response.HasError = true;
-                response.Error = $"Account no registered with {account.Email}";
+                response.Error = $"Account no registered with {request.Email}";
                 return response;
             }
 
