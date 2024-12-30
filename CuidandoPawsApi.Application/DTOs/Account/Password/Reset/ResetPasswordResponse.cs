@@ -8,8 +8,6 @@ namespace CuidandoPawsApi.Application.DTOs.Account.Password.Reset
 {
     public class ResetPasswordResponse
     {
-        public string? Error { get; set; }
-
-        public bool? HasError { get; set; }
+        public string? Message { get; set; }
     }
 }

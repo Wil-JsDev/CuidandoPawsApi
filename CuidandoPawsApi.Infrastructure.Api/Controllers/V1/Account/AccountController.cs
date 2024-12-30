@@ -1,5 +1,4 @@
 ﻿using Asp.Versioning;
-using CuidandoPawsApi.Application.Common;
 using CuidandoPawsApi.Application.DTOs.Account;
 using CuidandoPawsApi.Application.DTOs.Account.Authenticate;
 using CuidandoPawsApi.Application.DTOs.Account.Password.Forgot;
@@ -7,6 +6,7 @@ using CuidandoPawsApi.Application.DTOs.Account.Password.Reset;
 using CuidandoPawsApi.Application.DTOs.Account.Register;
 using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.UseCase.Account;
+using CuidandoPawsApi.Domain.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Principal;
@@ -139,23 +139,23 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         {
             var origin = Request.Headers["origin"];
             var forgotRequest = await _forgotPassword.GetForgotPasswordAsync(request,origin);
-            if (forgotRequest != null)
+            if (forgotRequest.Success)
             {
-                return Ok("Email sent. Check your inbox.");
-            } 
-                return NotFound(forgotRequest);
+                return Ok(forgotRequest.Data);
+            }
+            return NotFound(forgotRequest.ErrorMessage);
         }
 
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPasswordAsync(ResetPasswordRequest request)
         {
             var passwordReset = await _resetPassword.ResetPasswordAsync(request);
-            if (passwordReset == null)
-               return NotFound(passwordReset);
-            
-            return Ok(ApiResponse<string>.SuccessResponse("Your password has been changed, you can use the app"));
+            if (passwordReset.Success)
+            {
+                return Ok(passwordReset.Data);
+            }
+            return NotFound(passwordReset.ErrorMessage);
         }
-
 
         [HttpGet("{userId}")]
         public async Task<IActionResult> AccountDetailsAsync([FromRoute] string userId)

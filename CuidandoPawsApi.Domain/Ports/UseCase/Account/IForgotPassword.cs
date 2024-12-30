@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CuidandoPawsApi.Domain.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.Account
         where TResponse : class
         where TRequest : class
     {
-        Task<TResponse> GetForgotPasswordAsync(TRequest request, string origin);
+        Task<ApiResponse<TResponse>> GetForgotPasswordAsync(TRequest request, string origin);
     }
 }

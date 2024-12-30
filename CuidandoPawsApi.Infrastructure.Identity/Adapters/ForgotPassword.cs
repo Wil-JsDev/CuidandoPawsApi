@@ -1,7 +1,9 @@
 ﻿using CuidandoPawsApi.Application.DTOs.Account.Password.Forgot;
 using CuidandoPawsApi.Application.DTOs.Email;
+using CuidandoPawsApi.Domain;
 using CuidandoPawsApi.Domain.Ports.Email;
 using CuidandoPawsApi.Domain.Ports.UseCase.Account;
+using CuidandoPawsApi.Domain.Utils;
 using CuidandoPawsApi.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -27,20 +29,14 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             _emailSender = emailSender;
         }
 
-        public async Task<ForgotResponse> GetForgotPasswordAsync(ForgotRequest request, string origin)
+        public async Task<ApiResponse<ForgotResponse>> GetForgotPasswordAsync(ForgotRequest request, string origin)
         {
-            ForgotResponse response = new()
-            {
-                HasError = false
-            };
            
             var account = await _userManager.FindByEmailAsync(request.Email);
 
             if (account == null)
             {
-                response.HasError = true;
-                response.Error = $"Account no registered with {request.Email}";
-                return response;
+                return ApiResponse<ForgotResponse>.ErrorResponse($"Account no registered with {request.Email}");
             }
 
             var verificationUri = await SendForgotPasswordAsync(account,origin);
@@ -50,8 +46,11 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
                 Body = $"Please reset your account visiting this URL {verificationUri}",
                 Subject = "Forgot Password"
             });
-                
-            return response;
+
+
+            ForgotResponse response = new();
+            response.Message = "Email sent. Check your inbox.";
+            return ApiResponse<ForgotResponse>.SuccessResponse(response);
         }
 
         private async Task<string> SendForgotPasswordAsync(User user, string origin)

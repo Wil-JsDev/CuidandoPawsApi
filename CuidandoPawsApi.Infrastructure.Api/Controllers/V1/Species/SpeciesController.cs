@@ -1,5 +1,4 @@
 ﻿using Asp.Versioning;
-using CuidandoPawsApi.Application.Common;
 using CuidandoPawsApi.Application.DTOs.Species;
 using CuidandoPawsApi.Domain.Ports.UseCase.Species;
 using CuidandoPawsApi.Domain.Utils;

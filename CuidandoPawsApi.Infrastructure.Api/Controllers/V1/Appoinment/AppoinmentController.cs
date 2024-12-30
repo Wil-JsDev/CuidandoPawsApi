@@ -1,5 +1,4 @@
 ﻿using Asp.Versioning;
-using CuidandoPawsApi.Application.Common;
 using CuidandoPawsApi.Application.DTOs.Appoinment;
 using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Domain.Enum;
