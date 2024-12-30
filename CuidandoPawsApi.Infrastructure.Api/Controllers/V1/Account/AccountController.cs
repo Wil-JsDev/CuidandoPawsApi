@@ -9,6 +9,7 @@ using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.UseCase.Account;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Principal;
 
 namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
 {
@@ -138,11 +139,11 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         {
             var origin = Request.Headers["origin"];
             var forgotRequest = await _forgotPassword.GetForgotPasswordAsync(request,origin);
-            if (forgotRequest == null)
+            if (forgotRequest != null)
             {
+                return Ok("Email sent. Check your inbox.");
+            } 
                 return NotFound(forgotRequest);
-            }
-            return Ok(forgotRequest);
         }
 
         [HttpPost("reset-password")]
@@ -150,11 +151,9 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         {
             var passwordReset = await _resetPassword.ResetPasswordAsync(request);
             if (passwordReset == null)
-            {
-                return BadRequest(passwordReset);
-            }
-
-            return Ok(passwordReset);
+               return NotFound(passwordReset);
+            
+            return Ok(ApiResponse<string>.SuccessResponse("Your password has been changed, you can use the app"));
         }
 
 

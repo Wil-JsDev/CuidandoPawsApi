@@ -12,6 +12,8 @@ namespace CuidandoPawsApi.Application.DTOs.Account.Password.Reset
 
         public string? Token { get; set; }
 
+        public string? ConfirmPassword { get; set; }
+
         public string? Password { get; set; }
     }
 }
