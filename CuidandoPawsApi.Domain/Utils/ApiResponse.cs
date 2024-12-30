@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CuidandoPawsApi.Application.Common
+namespace CuidandoPawsApi.Domain.Utils
 {
     public class ApiResponse<T>
     {
