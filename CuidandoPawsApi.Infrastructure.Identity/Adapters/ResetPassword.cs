@@ -34,7 +34,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             if (account == null)
             {
                 response.HasError = true;
-                response.Error = $"No account register with {account.Email}";
+                response.Error = $"No account register with {request.Email}";
                 return response;
             }
 
