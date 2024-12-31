@@ -3,6 +3,7 @@ using CuidandoPawsApi.Application.DTOs.Email;
 using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.Email;
 using CuidandoPawsApi.Domain.Ports.UseCase.Account;
+using CuidandoPawsApi.Domain.Utils;
 using CuidandoPawsApi.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -29,29 +30,20 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             _emailSender = emailSender;
         }
 
-        public async Task<RegisterResponse> RegisterAdminAsync(RegisterRequest request, string origin)
+        public async Task<ApiResponse<RegisterResponse>> RegisterAdminAsync(RegisterRequest request, string origin)
         {
-            RegisterResponse response = new()
-            {
-                HasError = false
-            };
+            RegisterResponse response = new();
 
             var userWithSameUsername = await _userManager.FindByNameAsync(request.Username);
             if (userWithSameUsername != null)
             {
-                response.HasError = true;
-                response.StatusCode = 400;
-                response.Error = $"this user {userWithSameUsername} is already taken";
-                return response;
+                return ApiResponse<RegisterResponse>.ErrorResponse($"this user {userWithSameUsername} is already taken");
             }
 
             var userWithEmail = await _userManager.FindByEmailAsync(request.Email);
             if (userWithEmail != null)
             {
-                response.StatusCode = 400;
-                response.HasError = true;
-                response.Error = $"this email {userWithEmail} is already taken";
-                return response;
+                return ApiResponse<RegisterResponse>.ErrorResponse($"this email {userWithEmail} is already taken"); ;
             }
 
             User admin = new()
@@ -68,7 +60,6 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
 
             if (result.Succeeded)
             {
-                response.StatusCode = 200;
                 await _userManager.AddToRoleAsync(admin,Roles.Admin.ToString());
                 response.Email = request.Email;
                 response.Username = request.Username;
@@ -86,38 +77,26 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             }
             else
             {
-                response.StatusCode = 500;
-                response.HasError = true;
-                response.Error = "An error ocurred trying to registed the user";
-                return response;
+                return ApiResponse<RegisterResponse>.ErrorResponse("An error ocurred trying to registed the user");
             }
 
-            return response;
+            return ApiResponse<RegisterResponse>.SuccessResponse(response);
         }
 
-        public async Task<RegisterResponse> RegisterAccountAsync(RegisterRequest request, string origin, Roles roles)
+        public async Task<ApiResponse<RegisterResponse>> RegisterAccountAsync(RegisterRequest request, string origin, Roles roles)
         {
-            RegisterResponse response = new()
-            {
-                HasError = false
-            };
+            RegisterResponse response = new();
 
             var username = await _userManager.FindByNameAsync(request.Username);
             if (username != null)
             {
-                response.StatusCode = 400;
-                response.HasError = true;
-                response.Error = $"this user {username} is already taken";
-                return response;
+                return ApiResponse<RegisterResponse>.ErrorResponse($"this user {request.Username} is already taken");
             }
 
             var userWithEmial = await _userManager.FindByEmailAsync(request.Email);
             if (userWithEmial != null)
             {
-                response.StatusCode = 400;
-                response.HasError = true;
-                response.Error = $"this email {userWithEmial} is already taken";
-                return response;
+                return ApiResponse<RegisterResponse>.ErrorResponse($"this email {request.Email} is already taken");
             }
 
             User user = new ()
@@ -126,13 +105,13 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
                 LastName = request.LastName,
                 UserName = request.Username,
                 Email = request.Email,
+                PhoneNumber = request.PhoneNumber,
                 CreateAt = DateTime.UtcNow
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
             if (result.Succeeded)
             {
-                response.StatusCode = 200;
                 response.Email = request.Email;
                 response.Username = request.Username;
                 response.UserId = user.Id;
@@ -148,13 +127,10 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             }
             else
             {
-                response.StatusCode = 500;
-                response.HasError = true;
-                response.Error = "An error ocurred trying to registed the user";
-                return response;
+                return ApiResponse<RegisterResponse>.ErrorResponse("An error ocurred trying to registed the user");
             }
 
-            return response;
+            return ApiResponse<RegisterResponse>.SuccessResponse(response);
         }
 
         private async Task<string> SendVerificationEmilUrlAsync(User user, string origin)
