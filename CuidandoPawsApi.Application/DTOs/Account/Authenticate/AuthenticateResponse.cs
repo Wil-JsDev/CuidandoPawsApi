@@ -27,6 +27,8 @@ namespace CuidandoPawsApi.Application.DTOs.Account.Authenticate
 
        public string? JWTToken { get; set; }
 
+       public string? PhoneNumber { get; set; }
+
        [JsonIgnore] 
        public string? RefreshToken { get; set; }
     }
