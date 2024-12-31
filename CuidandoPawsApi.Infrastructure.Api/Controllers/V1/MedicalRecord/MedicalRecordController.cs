@@ -1,6 +1,5 @@
 ﻿using Asp.Versioning;
 using CuidandoPawsApi.Application.Adapters.PetsAdapt;
-using CuidandoPawsApi.Application.Common;
 using CuidandoPawsApi.Application.DTOs.MedicalRecord;
 using CuidandoPawsApi.Application.DTOs.Pets;
 using CuidandoPawsApi.Domain.Ports.UseCase;

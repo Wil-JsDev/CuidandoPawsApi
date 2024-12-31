@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CuidandoPawsApi.Domain.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace CuidandoPawsApi.Domain.Ports.UseCase.Account
 {
-    public interface IUpdateAccountDetails<TDto, TStatusDto> 
+    public interface IUpdateAccountDetails<DTo,TStatusDto> 
         where TStatusDto : class
-        where TDto : class
+        where DTo : class
     {
-        Task<TDto> UpdateAccountDetailsAsync(TStatusDto status, string id);
+        Task<ApiResponse<DTo>> UpdateAccountDetailsAsync(TStatusDto status, string id);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CuidandoPawsApi.Application.DTOs.Account.Password.Reset;
 using CuidandoPawsApi.Domain.Ports.UseCase.Account;
+using CuidandoPawsApi.Domain.Utils;
 using CuidandoPawsApi.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -22,20 +23,13 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             _signInManager = signInManager;
         }
 
-        public async Task<ResetPasswordResponse> ResetPasswordAsync(ResetPasswordRequest request)
+        public async Task<ApiResponse<ResetPasswordResponse>> ResetPasswordAsync(ResetPasswordRequest request)
         {
-            ResetPasswordResponse response = new ()
-            {
-                HasError = false
-            };
-
             var account = await _userManager.FindByEmailAsync(request.Email);
 
             if (account == null)
             {
-                response.HasError = true;
-                response.Error = $"No account register with {account.Email}";
-                return response;
+                return ApiResponse<ResetPasswordResponse>.ErrorResponse($"No account register with {request.Email}");
             }
 
             request.Token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(request.Token));
@@ -44,12 +38,12 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
 
             if (!result.Succeeded)
             {
-                response.HasError = true;
-                response.Error = "An error occurred while resseting";
-                return response;
+                return ApiResponse<ResetPasswordResponse>.ErrorResponse("An error occurred while resseting");
             }
 
-            return response;
+            ResetPasswordResponse response = new();
+            response.Message = "Your password has been changed, you can use the app";
+            return ApiResponse<ResetPasswordResponse>.SuccessResponse(response);
         }
     }
 }

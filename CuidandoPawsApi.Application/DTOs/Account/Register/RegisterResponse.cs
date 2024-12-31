@@ -8,10 +8,10 @@ namespace CuidandoPawsApi.Application.DTOs.Account.Register
 {
     public class RegisterResponse
     {
-        public int StatusCode { get; set; }
+        public string? UserId { get; set; }
 
-        public string? Error { get; set; }
+        public string? Username { get; set; }
 
-        public bool? HasError { get; set; }
+        public string? Email { get; set; }
     }
 }

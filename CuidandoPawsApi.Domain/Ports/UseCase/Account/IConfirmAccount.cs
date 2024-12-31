@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CuidandoPawsApi.Domain.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.Account
 {
     public interface IConfirmAccount
     {
-        Task<string> ConfirmAccountAsync(string userId, string token);
+        Task<ApiResponse<string>> ConfirmAccountAsync(string userId, string token);
     }
 }

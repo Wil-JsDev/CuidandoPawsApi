@@ -1,5 +1,6 @@
 ﻿using CuidandoPawsApi.Application.DTOs.Account;
 using CuidandoPawsApi.Domain.Ports.UseCase.Account;
+using CuidandoPawsApi.Domain.Utils;
 using CuidandoPawsApi.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
 {
-    public class UpdateAccountDetails : IUpdateAccountDetails<AccountDto, UpdateAccountDTo>
+    public class UpdateAccountDetails : IUpdateAccountDetails<AccountDto,UpdateAccountDTo>
     {
 
         private readonly UserManager<User> _userManager;
@@ -20,34 +21,33 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             _userManager = userManager;
         }
 
-        public async Task<AccountDto> UpdateAccountDetailsAsync(UpdateAccountDTo status, string id)
+        public async Task<ApiResponse<AccountDto>> UpdateAccountDetailsAsync(UpdateAccountDTo status, string id)
         {
-            var userId = await _userManager.FindByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id);
 
-            if (userId != null)
+            if (user != null)
             {
-                User user = new()
-                {
-                    FirstName = status.FirstName,
-                    LastName = status.LastName,
-                    PhoneNumber = status.PhoneNumber
-                };
-
+                user.FirstName = status.FirstName;
+                user.LastName = status.LastName;
+                user.PhoneNumber = status.PhoneNumber;
+                user.UserName = status.Username;
+                
                 var updateUser = await _userManager.UpdateAsync(user);
 
                 AccountDto accountDto = new()
                 {
                     FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Username = user.UserName,
+                    LastName = user.LastName, 
                     PhoneNumber = user.PhoneNumber,
-                    Email = user.Email
+                    Username = user.UserName,
+                    Email = user.Email,
+                    CreateAt = user.CreateAt
                 };
 
-                return accountDto;
+                return ApiResponse<AccountDto>.SuccessResponse(accountDto);
             }
 
-            return new AccountDto();
+            return ApiResponse<AccountDto>.ErrorResponse($"this {id} account not found");
         }
     }
 }

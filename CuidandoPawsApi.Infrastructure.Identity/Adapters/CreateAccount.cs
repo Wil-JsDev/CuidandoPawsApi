@@ -3,9 +3,11 @@ using CuidandoPawsApi.Application.DTOs.Email;
 using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.Email;
 using CuidandoPawsApi.Domain.Ports.UseCase.Account;
+using CuidandoPawsApi.Domain.Utils;
 using CuidandoPawsApi.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
+using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,29 +30,20 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             _emailSender = emailSender;
         }
 
-        public async Task<RegisterResponse> RegisterAdminAsync(RegisterRequest request, string origin)
+        public async Task<ApiResponse<RegisterResponse>> RegisterAdminAsync(RegisterRequest request, string origin)
         {
-            RegisterResponse response = new()
-            {
-                HasError = false
-            };
+            RegisterResponse response = new();
 
             var userWithSameUsername = await _userManager.FindByNameAsync(request.Username);
             if (userWithSameUsername != null)
             {
-                response.HasError = true;
-                response.StatusCode = 400;
-                response.Error = $"this user {userWithSameUsername} is already taken";
-                return response;
+                return ApiResponse<RegisterResponse>.ErrorResponse($"this user {userWithSameUsername} is already taken");
             }
 
             var userWithEmail = await _userManager.FindByEmailAsync(request.Email);
             if (userWithEmail != null)
             {
-                response.StatusCode = 400;
-                response.HasError = true;
-                response.Error = $"this email {userWithEmail} is already taken";
-                return response;
+                return ApiResponse<RegisterResponse>.ErrorResponse($"this email {userWithEmail} is already taken"); ;
             }
 
             User admin = new()
@@ -62,91 +55,82 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
                 Email = request.Email,
                 CreateAt = DateTime.UtcNow
             };
-
+          
             var result = await _userManager.CreateAsync(admin,request.Password);
 
             if (result.Succeeded)
             {
-                response.StatusCode = 200;
                 await _userManager.AddToRoleAsync(admin,Roles.Admin.ToString());
+                response.Email = request.Email;
+                response.Username = request.Username;
+                response.UserId = admin.Id;
                 var verification = await SendVerificationEmilUrlAsync(admin,origin);
                 await _emailSender.Execute(new EmailRequestDTos
                 {
                     To = request.Email,
                     Body = $"<p>Welcome to the Admin Portal!</p>" +
                     $"<p>Please confirm your account by clicking the link below:</p>" +
-                    $"<p><a href=\"{verification}\">Confirm Your Account</a></p>" +
+                    $"<p><a href=\"{verification}\">{verification} Confirm Your Account</a></p>" +
                     $"<p>If you did not request this registration, please ignore this email.</p>",
                     Subject = "Confirm registration for admin"
                 });
             }
             else
             {
-                response.StatusCode = 500;
-                response.HasError = true;
-                response.Error = "An error ocurred trying to registed the user";
-                return response;
+                return ApiResponse<RegisterResponse>.ErrorResponse("An error ocurred trying to registed the user");
             }
 
-            return response;
+            return ApiResponse<RegisterResponse>.SuccessResponse(response);
         }
 
-        public async Task<RegisterResponse> RegisterAccountAsync(RegisterRequest resquest, string origin, Roles roles)
+        public async Task<ApiResponse<RegisterResponse>> RegisterAccountAsync(RegisterRequest request, string origin, Roles roles)
         {
-            RegisterResponse response = new()
-            {
-                HasError = false
-            };
+            RegisterResponse response = new();
 
-            var username = await _userManager.FindByNameAsync(resquest.Username);
+            var username = await _userManager.FindByNameAsync(request.Username);
             if (username != null)
             {
-                response.StatusCode = 400;
-                response.HasError = true;
-                response.Error = $"this user {username} is already taken";
-                return response;
+                return ApiResponse<RegisterResponse>.ErrorResponse($"this user {request.Username} is already taken");
             }
 
-            var userWithEmial = await _userManager.FindByEmailAsync(resquest.Email);
+            var userWithEmial = await _userManager.FindByEmailAsync(request.Email);
             if (userWithEmial != null)
             {
-                response.StatusCode = 400;
-                response.HasError = true;
-                response.Error = $"this email {userWithEmial} is already taken";
-                return response;
+                return ApiResponse<RegisterResponse>.ErrorResponse($"this email {request.Email} is already taken");
             }
 
-            User caregiver = new ()
+            User user = new ()
             {
-                FirstName = resquest.FirstName,
-                LastName = resquest.LastName,
-                UserName = resquest.Username,
-                Email = resquest.Email,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                UserName = request.Username,
+                Email = request.Email,
+                PhoneNumber = request.PhoneNumber,
                 CreateAt = DateTime.UtcNow
             };
 
-            var result = await _userManager.CreateAsync(caregiver, resquest.Password);
+            var result = await _userManager.CreateAsync(user, request.Password);
             if (result.Succeeded)
             {
-                response.StatusCode = 200;
-                await _userManager.AddToRoleAsync(caregiver, roles.ToString());
-                var verification = await SendVerificationEmilUrlAsync(caregiver,origin);
+                response.Email = request.Email;
+                response.Username = request.Username;
+                response.UserId = user.Id;
+
+                await _userManager.AddToRoleAsync(user, roles.ToString());
+                var verification = await SendVerificationEmilUrlAsync(user,origin);
                 await _emailSender.Execute(new EmailRequestDTos
                 {
-                    To = resquest.Email,
+                    To = request.Email,
                     Body = $"<p>Please confirm your account by visiting this URL:</p><p><a href=\"{verification}\">{verification}</a></p>",
                     Subject = "Confirm registration"
                 });
             }
             else
             {
-                response.StatusCode = 500;
-                response.HasError = true;
-                response.Error = "An error ocurred trying to registed the user";
-                return response;
+                return ApiResponse<RegisterResponse>.ErrorResponse("An error ocurred trying to registed the user");
             }
 
-            return response;
+            return ApiResponse<RegisterResponse>.SuccessResponse(response);
         }
 
         private async Task<string> SendVerificationEmilUrlAsync(User user, string origin)

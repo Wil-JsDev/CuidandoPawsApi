@@ -13,5 +13,7 @@ namespace CuidandoPawsApi.Application.DTOs.Account
         public string? LastName { get; set; }
 
         public string? PhoneNumber { get; set; }
+
+        public string? Username { get; set; }
     }
 }
