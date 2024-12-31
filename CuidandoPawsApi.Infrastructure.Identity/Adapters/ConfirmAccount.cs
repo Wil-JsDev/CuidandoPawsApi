@@ -1,4 +1,5 @@
 ﻿using CuidandoPawsApi.Domain.Ports.UseCase.Account;
+using CuidandoPawsApi.Domain.Utils;
 using CuidandoPawsApi.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
@@ -19,12 +20,12 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             _userManager = userManager;
         }
 
-        public async Task<string> ConfirmAccountAsync(string userId, string token)
+        public async Task<ApiResponse<string>> ConfirmAccountAsync(string userId, string token)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return $"No account registered with this user";
+                return ApiResponse<string>.ErrorResponse($"No account registered with this {userId} user id");
             }
 
             token = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(token));
@@ -32,11 +33,11 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             var result = await _userManager.ConfirmEmailAsync(user,token);
             if (result.Succeeded)
             {
-                return $"Account confirm for {user.Email}. You can now use the app";
+                return ApiResponse<string>.SuccessResponse($"Account confirm for {user.Email}. You can now use the app");
             }
             else
             {
-                return $"An error occurred while confirming{user.Email}";
+                return ApiResponse<string>.ErrorResponse($"An error occurred while confirming {user.Email}");
             }
         }
     }
