@@ -69,6 +69,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
 
             response.Roles = rolesList.ToList();
             response.IsVerified = user.EmailConfirmed;
+            response.PhoneNumber = user.PhoneNumber;
             response.JWTToken = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
             var refreshToken = GenerateRefreshToken();
             response.RefreshToken = refreshToken.Token;

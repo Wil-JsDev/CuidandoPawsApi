@@ -1,5 +1,6 @@
 ﻿using CuidandoPawsApi.Application.DTOs.Account;
 using CuidandoPawsApi.Domain.Ports.UseCase.Account;
+using CuidandoPawsApi.Domain.Utils;
 using CuidandoPawsApi.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -19,25 +20,27 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             _userManager = userManager;
         }
 
-        public async Task<AccountDto> GetAccountDetailsAsync(string userId)
+        public async Task<ApiResponse<AccountDto>> GetAccountDetailsAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
-
-               return new ()
+                AccountDto accountDto = new()
                 {
                     UserId = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Username = user.UserName,
                     PhoneNumber = user.PhoneNumber,
-                    Email = user.Email
+                    Email = user.Email,
+                    CreateAt = user.CreateAt
                 };
-                
+
+                return ApiResponse<AccountDto>.SuccessResponse(accountDto);
+
             }
 
-            return null;
+            return ApiResponse<AccountDto>.ErrorResponse($"this {userId} account not found");
         }
     }
 }

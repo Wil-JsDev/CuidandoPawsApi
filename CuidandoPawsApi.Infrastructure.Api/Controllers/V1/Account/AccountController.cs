@@ -8,6 +8,7 @@ using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.UseCase.Account;
 using CuidandoPawsApi.Domain.Utils;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Principal;
 
@@ -31,7 +32,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         public AccountController(ICreateAccount<RegisterResponse, RegisterRequest> createAccount, IConfirmAccount confirmAccount, IAuthenticateAccount<AuthenticateResponse, AuthenticateRequest> authenticateAccount, 
             IDeleteAccount deleteAccount, IForgotPassword<ForgotResponse, ForgotRequest> forgotPassword, 
             IGetAccountDetails<AccountDto> getAccountDetails, ILogout logout, IResetPassword<ResetPasswordResponse, ResetPasswordRequest> resetPassword, 
-            IUpdateAccountDetails<AccountDto, UpdateAccountDTo> updateAccountDetails)
+            IUpdateAccountDetails<AccountDto,UpdateAccountDTo> updateAccountDetails)
         {
             _createAccount = createAccount;
             _confirmAccount = confirmAccount;
@@ -46,74 +47,64 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
 
 
         [HttpPost("register-caregiver")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RegisteCaregiverAsync(RegisterRequest resquest)
         {
             var origin = Request.Headers["origin"];
            
-            var registerRequest = await _createAccount.RegisterAccountAsync(resquest,origin,Roles.Caregiver);
-            if (registerRequest.StatusCode == 400)
-            {
-                return BadRequest(registerRequest);
-            }
-            else if (registerRequest.StatusCode == 500)
-            {
-                return StatusCode(500, registerRequest);
-            }
+            var result = await _createAccount.RegisterAccountAsync(resquest,origin,Roles.Caregiver);
+            if (result.Success)
+                return Ok(result.Data); 
 
-            return Ok(registerRequest);
+            return BadRequest(result.ErrorMessage);
         }
 
         [HttpPost("register-pet-owner")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RegistePetOwnerAsync(RegisterRequest resquest)
         {
             var origin = Request.Headers["origin"];
 
-            var registerRequest = await _createAccount.RegisterAccountAsync(resquest, origin, Roles.PetOwner);
+            var result = await _createAccount.RegisterAccountAsync(resquest, origin, Roles.PetOwner);
+            if (result.Success)
+                return Ok(result.Data);
 
-            if (registerRequest.StatusCode == 400)
-            {
-                return BadRequest(registerRequest);
-            }
-            else if (registerRequest.StatusCode == 500)
-            {
-                return StatusCode(500, registerRequest);
-            }
-
-            return Ok(registerRequest);
+            return BadRequest(result.ErrorMessage);
         }
 
         [HttpPost("register-admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RegisteAdminAsync(RegisterRequest resquest)
         {
             var origin = Request.Headers["origin"];
 
-            var registerRequest = await _createAccount.RegisterAdminAsync(resquest, origin);
+            var result = await _createAccount.RegisterAdminAsync(resquest, origin);
+            if (result.Success)
+                return Ok(result.Data);
 
-            if (registerRequest.StatusCode == 400)
-            {
-                return BadRequest(registerRequest);
-            }
-            else if (registerRequest.StatusCode == 500)
-            {
-                return StatusCode(500, registerRequest);
-            }
-
-            return Ok(registerRequest);
+            return BadRequest(result.ErrorMessage);
         }
 
         [HttpGet("confirm-account")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ConfirmAccountAsync([FromQuery] string userId, [FromQuery] string token)
         {
-            var userAccount = await _getAccountDetails.GetAccountDetailsAsync(userId);
-            if (userAccount == null)
-                return NotFound(ApiResponse<string>.ErrorResponse($"No account registered with this {userId} user"));
-             
-           var user = await _confirmAccount.ConfirmAccountAsync(userId,token);
-           return Ok(ApiResponse<string>.SuccessResponse(user));
+           var result = await _confirmAccount.ConfirmAccountAsync(userId, token);
+            if (result.Success)
+                 return Ok(result.Data);
 
+           return NotFound(result.ErrorMessage);
         }
 
         [HttpPost("authenticate")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> AuthenticateAsync(AuthenticateRequest request)
         {
             var authenticateRequest = await _authenticateAccount.AuthenticateAsync(request);
@@ -135,36 +126,40 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         }
 
         [HttpPost("forgot-password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ForgotPasswordAsync(ForgotRequest request)
         {
             var origin = Request.Headers["origin"];
-            var forgotRequest = await _forgotPassword.GetForgotPasswordAsync(request,origin);
-            if (forgotRequest.Success)
-            {
-                return Ok(forgotRequest.Data);
-            }
-            return NotFound(forgotRequest.ErrorMessage);
+            var result = await _forgotPassword.GetForgotPasswordAsync(request,origin);
+            if (result.Success)
+                return Ok(result.Data);
+             
+            return NotFound(result.ErrorMessage);
         }
 
         [HttpPost("reset-password")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ResetPasswordAsync(ResetPasswordRequest request)
         {
             var passwordReset = await _resetPassword.ResetPasswordAsync(request);
             if (passwordReset.Success)
-            {
                 return Ok(passwordReset.Data);
-            }
+           
             return NotFound(passwordReset.ErrorMessage);
         }
 
         [HttpGet("{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AccountDetailsAsync([FromRoute] string userId)
         {
-            var user = await _getAccountDetails.GetAccountDetailsAsync(userId);
-            if (user != null)
-             return Ok(ApiResponse<AccountDto>.SuccessResponse(user));
-             
-             return NotFound(ApiResponse<string>.ErrorResponse($"this {userId} account not found"));
+             var result = await _getAccountDetails.GetAccountDetailsAsync(userId);
+             if (result.Success)
+                 return Ok(result.Data);
+
+             return NotFound(result.ErrorMessage);
         }
 
         [HttpPost("logout")]
@@ -174,16 +169,16 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         }
 
         [HttpPut("{userId}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateAccountDetailsAsync(UpdateAccountDTo accountDTo,[FromRoute] string userId)
         {
-            var user = await _getAccountDetails.GetAccountDetailsAsync(userId);
-            if (user == null)
+            var result = await _updateAccountDetails.UpdateAccountDetailsAsync(accountDTo,userId);
+            if (result.Success)
             {
-                return NotFound(ApiResponse<string>.ErrorResponse($"this {userId} account not found"));
+                return Ok(result.Data);
             }
-
-            var userUpdate = await _updateAccountDetails.UpdateAccountDetailsAsync(accountDTo,userId);
-            return Ok(ApiResponse<AccountDto>.SuccessResponse(userUpdate));
+            return NotFound(result.ErrorMessage);
         }
     }
 }

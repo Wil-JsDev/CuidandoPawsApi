@@ -106,7 +106,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.IOC
             services.AddScoped<IForgotPassword<ForgotResponse, ForgotRequest>,ForgotPassword>();
             services.AddScoped<IResetPassword<ResetPasswordResponse, ResetPasswordRequest>, ResetPassword>();
             services.AddScoped<IGetAccountDetails<AccountDto>, GetAccountDetails>();
-            services.AddScoped<IUpdateAccountDetails<AccountDto,UpdateAccountDTo>, UpdateAccountDetails>();
+            services.AddScoped<IUpdateAccountDetails<AccountDto, UpdateAccountDTo>, UpdateAccountDetails>();
             services.AddScoped<IDeleteAccount, DeleteAccount>();
             #endregion
         }
