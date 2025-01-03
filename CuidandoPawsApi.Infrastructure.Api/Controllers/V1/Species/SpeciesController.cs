@@ -1,10 +1,9 @@
 ﻿using Asp.Versioning;
 using CuidandoPawsApi.Application.DTOs.Species;
 using CuidandoPawsApi.Domain.Ports.UseCase.Species;
-using CuidandoPawsApi.Domain.Utils;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
 {
@@ -37,7 +36,8 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
             _validator = validator;
         }
 
-        [HttpGet("all")]
+        [HttpGet]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<SpeciesDTos>> GetSpeciesAsyn(CancellationToken cancellationToken)
         {
@@ -46,6 +46,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
         }
 
         [HttpGet("{Id}")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByIdSpeciesAsync([FromRoute] int id, CancellationToken cancellationToken)
@@ -59,6 +60,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
         }
 
         [HttpPost]
+        [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateSpeciesAsync(CreateUpdateSpecieDTos specieDTos, CancellationToken cancellationToken)
@@ -79,6 +81,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
         }
 
         [HttpPatch("{id}")]
+        [EnableRateLimiting("fixed")]
         public async Task<IActionResult> UpdateSpeciesAsync([FromRoute] int id,[FromBody] CreateUpdateSpecieDTos speciesDto, CancellationToken cancellationToken )
         {
 
@@ -100,6 +103,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
         }
 
         [HttpDelete("{id}")]
+        [DisableRateLimiting]
         public async Task<IActionResult> DeleteSpeciesAsync([FromRoute] int id, CancellationToken cancellationToken)
         {
             var result = await _deleteSpecies.DeleteSpeciesAsync(id,cancellationToken);
@@ -111,6 +115,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
         }
 
         [HttpGet("last-added")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<SpeciesDTos>> GetLastAddedSpeciesAsync(CancellationToken cancellationToken)
         {
@@ -118,7 +123,8 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Species
             return Ok(specieLastAdded);
         }
 
-        [HttpGet]
+        [HttpGet("order-by")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetOrderedByISpeciesAsync([FromQuery] string sort, [FromQuery] string direction, CancellationToken cancellationToken)
         {

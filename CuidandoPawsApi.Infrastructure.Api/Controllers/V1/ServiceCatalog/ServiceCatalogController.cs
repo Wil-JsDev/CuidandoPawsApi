@@ -2,8 +2,8 @@
 using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Domain.Ports.UseCase.ServiceCatalog;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
 {
@@ -35,12 +35,14 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
         }
 
 
-        [HttpGet("all")]
+        [HttpGet]
+        [EnableRateLimiting("fixed")]
         public async Task<ActionResult<ServiceCatalogDTos>> GetServiceCatalogAsync(CancellationToken cancellationToken) =>
             Ok(await _getServiceCatalog.GetAllAsync(cancellationToken));
         
 
         [HttpGet("{id}")]
+        [EnableRateLimiting("fixed")]
         public async Task<IActionResult> GetByIdServiceCatalogAsync([FromRoute] int id, CancellationToken cancellationToken)
         {
             var result = await _getByIdServiceCatalog.GetByIdAsync(id,cancellationToken);
@@ -53,6 +55,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
         }
 
         [HttpPost]
+        [DisableRateLimiting]
         public async Task<IActionResult> CreateServiceCatalogAsync(CreateServiceCatalogDTos catalogDTos, CancellationToken cancellationToken)
         {
             var result = await _createValidator.ValidateAsync(catalogDTos, cancellationToken);
@@ -71,6 +74,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
         }
 
         [HttpPut("{id}")]
+        [EnableRateLimiting("fixed")]
         public async Task<IActionResult> UpdateServicerCatalogAsync([FromRoute] int id, UpdateServiceCatalogDTos catalogDTos, CancellationToken cancellationToken)
         {
             var result = await _updateValidator.ValidateAsync(catalogDTos,cancellationToken);
@@ -91,6 +95,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
         }
 
         [HttpDelete("{id}")]
+        [DisableRateLimiting]
         public async Task<IActionResult> DeleteServiceCatalogAsync([FromRoute] int id, CancellationToken cancellationToken)
         {
             var result = await _deleteServiceCatalog.DeleteAsync(id,cancellationToken);

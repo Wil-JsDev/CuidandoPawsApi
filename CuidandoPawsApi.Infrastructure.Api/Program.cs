@@ -1,12 +1,13 @@
 using CuidandoPawsApi.Infrastructure.Persistence.IOC;
 using CuidandoPawsApi.Application.IOC;
-using dotenv.net;
 using CuidandoPawsApi.Infrastructure.Shared;
 using CuidandoPawsApi.Infrastructure.Api.Extensions;
 using CuidandoPawsApi.Infrastructure.Identity.IOC;
 using Microsoft.AspNetCore.Identity;
 using CuidandoPawsApi.Infrastructure.Identity.Models;
 using CuidandoPawsApi.Infrastructure.Identity.Seeds;
+using Microsoft.AspNetCore.RateLimiting;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +30,33 @@ builder.Services.AddApplicationService();
 builder.Services.AddSharedLayer(configuration);
 builder.Services.AddIdentity(configuration);
 builder.Services.AddValidations();
+
+// Rate Limiter
+builder.Services.AddRateLimiter(options =>
+{
+	options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (context, token) =>
+    {
+        await context.HttpContext.Response.WriteAsync("Request limit exceeded. Please try again later");
+    };
+	options.AddFixedWindowLimiter("fixed", limiterOptions =>
+	{
+		limiterOptions.Window = TimeSpan.FromMinutes(3);
+        limiterOptions.PermitLimit = 5;
+    });
+    options.AddSlidingWindowLimiter("sliding", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 5;
+        limiterOptions.SegmentsPerWindow = 5;
+        limiterOptions.Window = TimeSpan.FromMinutes(15);
+    });
+    options.AddTokenBucketLimiter("token", limiterOptions =>
+    {
+        limiterOptions.TokenLimit = 100;
+        limiterOptions.TokensPerPeriod = 3;
+        limiterOptions.ReplenishmentPeriod = TimeSpan.FromSeconds(10);
+    });
+});
 
 var app = builder.Build();
 
@@ -57,6 +85,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
