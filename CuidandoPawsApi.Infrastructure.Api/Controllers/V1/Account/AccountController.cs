@@ -7,10 +7,8 @@ using CuidandoPawsApi.Application.DTOs.Account.Register;
 using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.UseCase.Account;
 using CuidandoPawsApi.Domain.Utils;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Principal;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
 {
@@ -47,6 +45,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
 
 
         [HttpPost("register-caregiver")]
+        [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RegisteCaregiverAsync(RegisterRequest resquest)
@@ -61,6 +60,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         }
 
         [HttpPost("register-pet-owner")]
+        [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RegistePetOwnerAsync(RegisterRequest resquest)
@@ -75,6 +75,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         }
 
         [HttpPost("register-admin")]
+        [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RegisteAdminAsync(RegisterRequest resquest)
@@ -89,6 +90,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         }
 
         [HttpGet("confirm-account")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ConfirmAccountAsync([FromQuery] string userId, [FromQuery] string token)
@@ -101,6 +103,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         }
 
         [HttpPost("authenticate")]
+        [EnableRateLimiting("token")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -126,6 +129,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         }
 
         [HttpPost("forgot-password")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ForgotPasswordAsync(ForgotRequest request)
@@ -139,6 +143,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         }
 
         [HttpPost("reset-password")]
+        [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> ResetPasswordAsync(ResetPasswordRequest request)
@@ -151,6 +156,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         }
 
         [HttpGet("{userId}")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AccountDetailsAsync([FromRoute] string userId)
@@ -163,12 +169,14 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         }
 
         [HttpPost("logout")]
+        [EnableRateLimiting("fixed")]
         public async Task LogoutAsync()
         {
             await _logout.LogOutAsync();
         }
 
         [HttpPut("{userId}")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateAccountDetailsAsync(UpdateAccountDTo accountDTo,[FromRoute] string userId)
