@@ -4,12 +4,12 @@ using CuidandoPawsApi.Domain.Pagination;
 using CuidandoPawsApi.Domain.Ports.UseCase;
 using CuidandoPawsApi.Domain.Ports.UseCase.Pets;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
 {
+    
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{vresion:ApiVersion}/pets")]
@@ -40,6 +40,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpPost]
+        [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreatePetsAsync([FromBody] CreatePetsDTos createPetsDTos, CancellationToken cancellationToken)
@@ -62,6 +63,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpDelete("{id}")]
+        [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PetsDTos>> DeletePetsAsync([FromRoute] int id, CancellationToken cancellationToken)
@@ -76,6 +78,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpGet("{id}")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByIdPetsAsync(int id, CancellationToken cancellationToken)
@@ -89,6 +92,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpPut("{id}")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<PetsDTos>> UpdatePetsAsync([FromRoute] int id, [FromBody] UpdatePetsDTos updatePetsDTos, CancellationToken cancellationToken )
@@ -111,6 +115,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpGet("last-added-today")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<PetsDTos>> GetLastAddedPetsAsync(CancellationToken cancellationToken)
         {
@@ -119,6 +124,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpGet("pagination")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedPetsAsync([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
         {
