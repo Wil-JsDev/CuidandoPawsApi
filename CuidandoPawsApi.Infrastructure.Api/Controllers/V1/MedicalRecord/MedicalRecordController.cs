@@ -8,6 +8,7 @@ using CuidandoPawsApi.Domain.Utils;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
 {
@@ -34,7 +35,8 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
 
-        [HttpGet("all")]
+        [HttpGet]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<MedicalRecordDTos>> GetMedicalRecordAsync(CancellationToken cancellationToken)
         {
@@ -45,6 +47,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
 
 
         [HttpGet("{id}")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByIdAsync([FromRoute]int id,CancellationToken cancellationToken)
@@ -59,6 +62,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpPost]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CreateMedicalRecordAsync([FromBody] CreateUpdateMedicalRecordDTos medicalRecordDTos, CancellationToken cancellationToken)
@@ -81,6 +85,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpPut("{id}")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateMedicalRecordAsync([FromRoute] int id, [FromBody] CreateUpdateMedicalRecordDTos updateMedicalRecordDTos, CancellationToken cancellationToken)
