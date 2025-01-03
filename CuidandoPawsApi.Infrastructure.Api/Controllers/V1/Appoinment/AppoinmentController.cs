@@ -3,10 +3,9 @@ using CuidandoPawsApi.Application.DTOs.Appoinment;
 using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.UseCase.Appoinment;
-using CuidandoPawsApi.Domain.Utils;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
 {
@@ -42,6 +41,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         }
 
         [HttpPost]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateAppoinmentAsync([FromBody] CreateUpdateAppoinmentDTos dTos, CancellationToken cancellationToken)
@@ -64,6 +64,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         }
 
         [HttpGet("{id}")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByIdAppoinmentAsync([FromRoute] int id, CancellationToken cancellationToken)
@@ -77,13 +78,15 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
             return NotFound(appoinmentId.Error);
         }
 
-        [HttpGet("all")]
+        [HttpGet]
+        [EnableRateLimiting("fixed")]
         public async Task<IEnumerable<AppoinmentDTos>> AppoinmentAllAsync(CancellationToken cancellationToken)
         {
             return await _getAppoinment.GetAllAsync(cancellationToken);     
         }
 
         [HttpDelete("{appoinmentId}")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteAppoinmentAsync([FromRoute] int appoinmentId, CancellationToken cancellationToken)
@@ -98,6 +101,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         }
 
         [HttpPatch("{appoinmentId}")]
+        [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateAppoinmentAsync([FromRoute] int appoinmentId, [FromBody] CreateUpdateAppoinmentDTos dTos ,CancellationToken cancellationToken)
@@ -119,6 +123,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         }
 
         [HttpGet("check-availability/service-catalog/{serviceId}")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CheckAppoinmentAvailabilityAsync([FromRoute] int serviceId ,CancellationToken cancellationToken)
         {
@@ -131,6 +136,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         }
  
         [HttpGet("availability-service/service-catalog/{serviceCatalogId}")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> AvailabilityServiceAsync([FromRoute] int serviceCatalogId, CancellationToken cancellationToken)
         {
@@ -144,6 +150,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         }
 
         [HttpGet("last-added")]
+        [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> LastAddedAppoinmentAsync([FromQuery] FilterDate filterDate, CancellationToken cancellationToken)
         {
