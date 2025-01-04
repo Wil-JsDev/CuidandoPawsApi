@@ -2,10 +2,12 @@
 using CuidandoPawsApi.Application.Adapters.PetsAdapt;
 using CuidandoPawsApi.Application.DTOs.MedicalRecord;
 using CuidandoPawsApi.Application.DTOs.Pets;
+using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.UseCase;
 using CuidandoPawsApi.Domain.Ports.UseCase.MedicalRecord;
 using CuidandoPawsApi.Domain.Utils;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
@@ -36,6 +38,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
 
 
         [HttpGet]
+        [Authorize]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<MedicalRecordDTos>> GetMedicalRecordAsync(CancellationToken cancellationToken)
@@ -47,6 +50,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
 
 
         [HttpGet("{id}")]
+        [Authorize]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -62,6 +66,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpPost]
+        [Authorize(Roles = "Caregiver,Admin")]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -85,6 +90,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
