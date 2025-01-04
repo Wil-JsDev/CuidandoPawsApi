@@ -7,15 +7,12 @@ using Microsoft.AspNetCore.Identity;
 using CuidandoPawsApi.Infrastructure.Identity.Models;
 using CuidandoPawsApi.Infrastructure.Identity.Seeds;
 using Microsoft.AspNetCore.RateLimiting;
-
-
+using CuidandoPawsApi.Infrastructure.Api.ExceptionHandling;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
 // Add services to the container.
-
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -30,6 +27,9 @@ builder.Services.AddApplicationService();
 builder.Services.AddSharedLayer(configuration);
 builder.Services.AddIdentity(configuration);
 builder.Services.AddValidations();
+
+// Register the global exception handler
+builder.Services.AddException();
 
 // Rate Limiter
 builder.Services.AddRateLimiter(options =>
@@ -59,6 +59,7 @@ builder.Services.AddRateLimiter(options =>
 });
 
 var app = builder.Build();
+app.UseExceptionHandler(_ => { });
 
 using (var scope = app.Services.CreateScope())
 {
