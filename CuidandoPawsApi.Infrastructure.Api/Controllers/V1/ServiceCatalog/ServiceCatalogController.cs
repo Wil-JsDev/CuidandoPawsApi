@@ -2,6 +2,7 @@
 using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Domain.Ports.UseCase.ServiceCatalog;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -36,27 +37,28 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
 
 
         [HttpGet]
+        [Authorize]
         [EnableRateLimiting("fixed")]
         public async Task<ActionResult<ServiceCatalogDTos>> GetServiceCatalogAsync(CancellationToken cancellationToken) =>
             Ok(await _getServiceCatalog.GetAllAsync(cancellationToken));
         
 
         [HttpGet("{id}")]
+        [Authorize]
         [EnableRateLimiting("fixed")]
         public async Task<IActionResult> GetByIdServiceCatalogAsync([FromRoute] int id, CancellationToken cancellationToken)
         {
             var result = await _getByIdServiceCatalog.GetByIdAsync(id,cancellationToken);
             if (result.IsSuccess)
-            {
                 return Ok(result.Value);
-            }
-
+            
             return NotFound(result.Error);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Caregiver,Admin")]
         [DisableRateLimiting]
-        public async Task<IActionResult> CreateServiceCatalogAsync(CreateServiceCatalogDTos catalogDTos, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateServiceCatalogAsync([FromBody]CreateServiceCatalogDTos catalogDTos, CancellationToken cancellationToken)
         {
             var result = await _createValidator.ValidateAsync(catalogDTos, cancellationToken);
             if (!result.IsValid)
@@ -74,6 +76,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         [EnableRateLimiting("fixed")]
         public async Task<IActionResult> UpdateServicerCatalogAsync([FromRoute] int id, UpdateServiceCatalogDTos catalogDTos, CancellationToken cancellationToken)
         {
@@ -95,14 +98,14 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.ServiceCatalog
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [DisableRateLimiting]
         public async Task<IActionResult> DeleteServiceCatalogAsync([FromRoute] int id, CancellationToken cancellationToken)
         {
             var result = await _deleteServiceCatalog.DeleteAsync(id,cancellationToken);
             if (result.IsSuccess)
-            {
                 return NoContent();
-            }
+             
             return BadRequest(result.Error);
         }
     }
