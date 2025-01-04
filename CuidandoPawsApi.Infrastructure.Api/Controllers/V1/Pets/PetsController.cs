@@ -4,6 +4,7 @@ using CuidandoPawsApi.Domain.Pagination;
 using CuidandoPawsApi.Domain.Ports.UseCase;
 using CuidandoPawsApi.Domain.Ports.UseCase.Pets;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -40,6 +41,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpPost]
+        [Authorize]
         [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -63,6 +65,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -70,14 +73,13 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         {
             var result = await _deletePets.DeleteAsync(id,cancellationToken);
             if (result.IsSuccess)
-            {
                 return NoContent();
-            }
-
+            
             return NotFound(result.Error);
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -85,13 +87,13 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         {
             var result = await _getByIdPets.GetByIdAsync(id,cancellationToken);
             if (result.IsSuccess)
-            {
                 return Ok(result.Value);
-            }
+     
             return NotFound(result.Error);
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Caregiver,Admin")]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -115,6 +117,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpGet("last-added-today")]
+        [Authorize]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<PetsDTos>> GetLastAddedPetsAsync(CancellationToken cancellationToken)
@@ -124,16 +127,15 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Pets
         }
 
         [HttpGet("pagination")]
+        [Authorize]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetPagedPetsAsync([FromQuery] int pageNumber, [FromQuery] int pageSize, CancellationToken cancellationToken)
         {
             var result =  await _getPagedPets.ListWithPaginationAsync(pageNumber,pageSize,cancellationToken);
             if (result.IsSuccess)
-            {
                 return Ok(result.Value);
-            }
-
+            
             return BadRequest(result.Error);
         }
 
