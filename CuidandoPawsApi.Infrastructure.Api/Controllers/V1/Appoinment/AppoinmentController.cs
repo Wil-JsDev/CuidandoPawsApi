@@ -4,6 +4,7 @@ using CuidandoPawsApi.Application.DTOs.ServiceCatalog;
 using CuidandoPawsApi.Domain.Enum;
 using CuidandoPawsApi.Domain.Ports.UseCase.Appoinment;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -41,6 +42,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         }
 
         [HttpPost]
+        [Authorize(Roles = "PetOwner,Admin")]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -64,6 +66,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,14 +74,13 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         {
             var appoinmentId = await _findByIdAppoinment.GetByIdAsync(id, cancellationToken);
             if (appoinmentId.IsSuccess)
-            {
                 return Ok(appoinmentId.Value);
-            }
-
+            
             return NotFound(appoinmentId.Error);
         }
 
         [HttpGet]
+        [Authorize]
         [EnableRateLimiting("fixed")]
         public async Task<IEnumerable<AppoinmentDTos>> AppoinmentAllAsync(CancellationToken cancellationToken)
         {
@@ -86,6 +88,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         }
 
         [HttpDelete("{appoinmentId}")]
+        [Authorize(Roles = "PetOwner,Admin")]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -93,14 +96,13 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         {
             var appoinment = await _deleteAppoinment.DeleteAppoinmentAsync(appoinmentId,cancellationToken);
             if (appoinment.IsSuccess)
-            {
                 return NoContent();
-            }
-
+            
             return NotFound(appoinment.Error);
         }
 
         [HttpPatch("{appoinmentId}")]
+        [Authorize(Roles = "PetOwner,Admin")]
         [DisableRateLimiting]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -123,33 +125,34 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Appoinment
         }
 
         [HttpGet("check-availability/service-catalog/{serviceId}")]
+        [Authorize(Roles = "PetOwner,Admin")]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CheckAppoinmentAvailabilityAsync([FromRoute] int serviceId ,CancellationToken cancellationToken)
         {
             var serviceCatalog = await _checkAppoinmentAvailability.CheckAvailabilityAsync(serviceId,cancellationToken);
             if (serviceCatalog.IsSuccess)
-            {
                 return Ok(serviceCatalog.Value);
-            }
+             
             return NotFound(serviceCatalog.Error);
         }
  
         [HttpGet("availability-service/service-catalog/{serviceCatalogId}")]
+        [Authorize(Roles = "PetOwner,Admin")]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AvailabilityServiceAsync([FromRoute] int serviceCatalogId, CancellationToken cancellationToken)
         {
             var serviceCatalogAvailability = await _getAppoinmentAvailabilityService.GetAvailabilityServiceAsync(serviceCatalogId,cancellationToken);
             if (serviceCatalogAvailability.IsSuccess)
-            {   
                 return Ok(serviceCatalogAvailability.Value);
-            }
-
+               
             return NotFound(serviceCatalogAvailability.Error);
         }
 
         [HttpGet("last-added")]
+        [Authorize]
         [EnableRateLimiting("fixed")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> LastAddedAppoinmentAsync([FromQuery] FilterDate filterDate, CancellationToken cancellationToken)
