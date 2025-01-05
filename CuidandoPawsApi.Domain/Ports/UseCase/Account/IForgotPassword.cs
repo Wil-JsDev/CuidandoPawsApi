@@ -11,6 +11,6 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.Account
         where TResponse : class
         where TRequest : class
     {
-        Task<ApiResponse<TResponse>> GetForgotPasswordAsync(TRequest request, string origin);
+        Task<ApiResponse<TResponse>> GetForgotPasswordAsync(TRequest request);
     }
 }
