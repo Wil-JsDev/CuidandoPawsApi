@@ -12,8 +12,8 @@ namespace CuidandoPawsApi.Domain.Ports.UseCase.Account
         where TResponse : class 
         where TRequest : class
     {
-        Task<ApiResponse<TResponse>> RegisterAccountAsync(TRequest resquest, string origin, Roles roles);
+        Task<ApiResponse<TResponse>> RegisterAccountAsync(TRequest resquest, Roles roles);
         
-        Task<ApiResponse<TResponse>> RegisterAdminAsync(TRequest request, string origin);
+        Task<ApiResponse<TResponse>> RegisterAdminAsync(TRequest request);
     }
 }
