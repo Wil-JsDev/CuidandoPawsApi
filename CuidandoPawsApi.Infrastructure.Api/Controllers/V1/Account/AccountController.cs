@@ -66,10 +66,8 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
             {
                 return BadRequest(resultValidation.Errors);
             }
-
-            var origin = Request.Headers["origin"];
            
-            var result = await _createAccount.RegisterAccountAsync(resquest,origin,Roles.Caregiver);
+            var result = await _createAccount.RegisterAccountAsync(resquest,Roles.Caregiver);
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -84,9 +82,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RegistePetOwnerAsync([FromBody] RegisterRequest resquest)
         {
-            var origin = Request.Headers["origin"];
-
-            var result = await _createAccount.RegisterAccountAsync(resquest, origin, Roles.PetOwner);
+            var result = await _createAccount.RegisterAccountAsync(resquest, Roles.PetOwner);
             if (result.Success)
                 return Ok(result.Data);
 
@@ -105,9 +101,8 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
             {
                 return BadRequest(resultValidation.Errors);
             }
-            var origin = Request.Headers["origin"];
 
-            var result = await _createAccount.RegisterAdminAsync(resquest, origin);
+            var result = await _createAccount.RegisterAdminAsync(resquest);
             if (result.Success)
             {
                 return Ok(result.Data);
@@ -167,8 +162,7 @@ namespace CuidandoPawsApi.Infrastructure.Api.Controllers.V1.Account
                 return BadRequest(resultValidation.Errors);
             }
 
-            var origin = Request.Headers["origin"];
-            var result = await _forgotPassword.GetForgotPasswordAsync(request,origin);
+            var result = await _forgotPassword.GetForgotPasswordAsync(request);
             if (result.Success)
             {
                 return Ok(result.Data);

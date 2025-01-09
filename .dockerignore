@@ -1,0 +1,7 @@
+.git
+.github
+**/.classpath
+**/.dockerignore
+bin/ 
+obj/
+**/*.*proj.user

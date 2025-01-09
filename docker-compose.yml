@@ -1,8 +1,8 @@
 
 services:
-  Mydatabase:
+  PostgreSql:
    image: ${POSTGRES_IMAGE}
-   container_name: myDb
+   container_name: Postgresql
    environment:
    - POSTGRES_USER=${POSTGRES_USER}
    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -15,11 +15,24 @@ services:
    volumes:
    - CuidandoPawsDb:/var/lib/postgresql/data
   
-
+  CuidandoPaws:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: CuidandoPawsBackend
+    image: wdelacruzdev/cuidando-paws-backend:0.0.1
+    restart: always
+    depends_on:
+      - PostgreSql
+    ports:
+      - ${CUIDANDO_PAWS_PORTS}:5050
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS}
 
   PgAdmin:
    depends_on: 
-   - Mydatabase
+   - PostgreSql
    image: dpage/pgadmin4:6.17
    container_name: PgAdmin
    restart: always
@@ -35,5 +48,6 @@ services:
    
  
 volumes:
+  CuidandoPawsBackend:
   CuidandoPawsDb:
   PgAdmin:  

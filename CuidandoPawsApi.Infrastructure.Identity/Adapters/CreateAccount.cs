@@ -30,7 +30,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             _emailSender = emailSender;
         }
 
-        public async Task<ApiResponse<RegisterResponse>> RegisterAdminAsync(RegisterRequest request, string origin)
+        public async Task<ApiResponse<RegisterResponse>> RegisterAdminAsync(RegisterRequest request)
         {
             RegisterResponse response = new();
 
@@ -64,14 +64,30 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
                 response.Email = request.Email;
                 response.Username = request.Username;
                 response.UserId = admin.Id;
-                var verification = await SendVerificationEmilUrlAsync(admin,origin);
+                var verification = await SendVerificationEmilUrlAsync(admin);
                 await _emailSender.Execute(new EmailRequestDTos
                 {
                     To = request.Email,
-                    Body = $"<p>Welcome to the Admin Portal!</p>" +
-                    $"<p>Please confirm your account by clicking the link below:</p>" +
-                    $"<p><a href=\"{verification}\">{verification} Confirm Your Account</a></p>" +
-                    $"<p>If you did not request this registration, please ignore this email.</p>",
+                    Body = $@"
+                    <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.8; max-width: 600px; margin: 0 auto; border: 1px solid #e6e6e6; border-radius: 10px; padding: 25px; background-color: #ffffff;'>
+                    <h1 style='color: #007BFF; font-size: 26px; margin-bottom: 20px; text-align: center;'>Confirm Your Account Registration</h1>
+                    <p style='font-size: 16px; margin-bottom: 20px; text-align: center;'>
+                        Hello <strong>{request.Email}</strong>, <br>
+                        Thank you very much for registering as admin, taking care of paws is a pleasure. To complete your account setup, please use the verification token provided below.
+                    </p>
+                    <div style='font-size: 16px; background-color: #f9f9f9; padding: 20px; border: 1px dashed #ccc; border-radius: 8px; margin-bottom: 20px; text-align: center;'>
+                    <strong style='color: #333;'>Your Verification Token:</strong>
+                    <p style='font-size: 18px; color: #007BFF; font-weight: bold;'>{verification}</p>
+                    </div>
+                    <p style='font-size: 14px; margin-bottom: 20px; text-align: center;'>
+                    If you didn’t request this email, no further action is required. Please feel free to contact us if you have any concerns.
+                    </p>
+                    <hr style='border: none; border-top: 1px solid #e6e6e6; margin: 30px 0;'>
+                    <p style='font-size: 12px; color: #888; text-align: center;'>
+                    This email is brought to you by <strong>Caring for Paws</strong>. <br>
+                    Please do not reply directly to this email as it is not monitored.
+                    </p>
+                            </div>",
                     Subject = "Confirm registration for admin"
                 });
             }
@@ -83,7 +99,7 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             return ApiResponse<RegisterResponse>.SuccessResponse(response);
         }
 
-        public async Task<ApiResponse<RegisterResponse>> RegisterAccountAsync(RegisterRequest request, string origin, Roles roles)
+        public async Task<ApiResponse<RegisterResponse>> RegisterAccountAsync(RegisterRequest request, Roles roles)
         {
             RegisterResponse response = new();
 
@@ -117,12 +133,31 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
                 response.UserId = user.Id;
 
                 await _userManager.AddToRoleAsync(user, roles.ToString());
-                var verification = await SendVerificationEmilUrlAsync(user,origin);
+                var verification = await SendVerificationEmilUrlAsync(user);
                 await _emailSender.Execute(new EmailRequestDTos
                 {
                     To = request.Email,
-                    Body = $"<p>Please confirm your account by visiting this URL:</p><p><a href=\"{verification}\">{verification}</a></p>",
-                    Subject = "Confirm registration"
+                    Body = $@"
+                    <div style='font-family: Arial, sans-serif; color: #333; line-height: 1.8; max-width: 600px; margin: 0 auto; border: 1px solid #e6e6e6; border-radius: 10px; padding: 25px; background-color: #ffffff;'>
+                    <h1 style='color: #007BFF; font-size: 26px; margin-bottom: 20px; text-align: center;'>Confirm Your Account Registration</h1>
+                    <p style='font-size: 16px; margin-bottom: 20px; text-align: center;'>
+                        Hello <strong>{request.Email}</strong>, <br>
+                        Thank you for registering with us. To complete your account setup, please use the verification token provided below.
+                    </p>
+                    <div style='font-size: 16px; background-color: #f9f9f9; padding: 20px; border: 1px dashed #ccc; border-radius: 8px; margin-bottom: 20px; text-align: center;'>
+                    <strong style='color: #333;'>Your Verification Token:</strong>
+                    <p style='font-size: 18px; color: #007BFF; font-weight: bold;'>{verification}</p>
+                    </div>
+                    <p style='font-size: 14px; margin-bottom: 20px; text-align: center;'>
+                    If you didn’t request this email, no further action is required. Please feel free to contact us if you have any concerns.
+                    </p>
+                    <hr style='border: none; border-top: 1px solid #e6e6e6; margin: 30px 0;'>
+                    <p style='font-size: 12px; color: #888; text-align: center;'>
+                    This email is brought to you by <strong>Caring for Paws</strong>. <br>
+                    Please do not reply directly to this email as it is not monitored.
+                    </p>
+                            </div>",
+                    Subject = "Confirm Your Account Registration"
                 });
             }
             else
@@ -133,19 +168,12 @@ namespace CuidandoPawsApi.Infrastructure.Identity.Adapters
             return ApiResponse<RegisterResponse>.SuccessResponse(response);
         }
 
-        private async Task<string> SendVerificationEmilUrlAsync(User user, string origin)
+        private async Task<string> SendVerificationEmilUrlAsync(User user)
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-            string route = "User/ConfirmEmail";
-
-            var uri = new Uri(string.Concat($"{origin}/", route));
-
-            var verificationUrl = QueryHelpers.AddQueryString(uri.ToString(), "userId", user.Id);
-            verificationUrl = QueryHelpers.AddQueryString(uri.ToString(), "token", code);
-
-            return verificationUrl;
+            return code;
         }
     }
 }
