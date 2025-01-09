@@ -37,7 +37,7 @@ jobs:
       run: |
         docker build -t wdelacruzdev/cuidandopaws-backend:$NEW_VERSION .
         docker build -t wdelacruzdev/cuidandopaws-backend:latest .
-
+        
     - name: Docker Push
       env:
         NEW_VERSION: ${{steps.version.output.version}}
