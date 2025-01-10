@@ -1,0 +1,32 @@
+name: Docker image CI dev
+
+on:
+  pull_request:   
+    branches: [ "dev" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Git Semantic Version
+        uses: PaulHatch/semantic-version@v4.0.3
+        with:
+          major_pattern: "major"
+          minor_pattern: "feat"
+          format: "${major}.${minor}.${patch}-prerelease ${increment}"
+        id: version
+
+      - name: Docker Build
+        env:
+          NEW_VERSION: ${{ steps.version.outputs.version }}
+        run: |
+         docker build -t wdelacruzdev/cuidandopaws-backend:$NEW_VERSION .
+         docker build -t wdelacruzdev/cuidandopaws-backend:latest .
+
+    
